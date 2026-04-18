@@ -21,9 +21,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: site/package-lock.json
-      - run: npm ci
+      # Use `npm install` rather than `npm ci` because this repo intentionally
+      # does not commit a package-lock.json (the sample is meant to be copied
+      # into other repos that have their own lock policies).
+      - run: npm install --no-audit --no-fund
       - run: npm run check
       - run: npm run build
 
