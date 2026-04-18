@@ -21,7 +21,7 @@
 - [ ] No secrets, API keys, or personal data are present in the diff.
 - [ ] If `site/` changed, `npm run build` succeeds locally.
 - [ ] If a skill changed, the seven-section shape from `CONTRIBUTING.md` is preserved.
-- [ ] The PR title starts with `[sample]`, `[skill]`, `[site]`, or `[docs]`.
+- [ ] The PR title uses conventional-commit format: `feat:`, `fix:`, `chore:`, `docs:`, `sample:`, `skill:`, `site:`, `ci:`, `refactor:`, or `test:`. The `pr-hygiene` check enforces this.
 
 ## Related reading
 

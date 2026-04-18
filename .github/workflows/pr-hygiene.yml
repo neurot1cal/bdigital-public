@@ -1,0 +1,78 @@
+name: PR Hygiene
+
+# Enforces deterministic PR structure:
+#  1. Title follows conventional-commit format with an allowlist of types.
+#  2. Body includes the required sections from PULL_REQUEST_TEMPLATE.md
+#     and at least one ticked checklist item.
+#
+# Intentionally NOT handled by an LLM review skill. These are
+# structural/regex checks; an LLM here would just burn tokens.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  title-format:
+    name: Title format (conventional commits)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Allowed types. Keep this aligned with the checklist in
+          # .github/PULL_REQUEST_TEMPLATE.md.
+          types: |
+            feat
+            fix
+            chore
+            docs
+            sample
+            skill
+            site
+            ci
+            refactor
+            test
+          requireScope: false
+          subjectPattern: ^[a-z0-9].+$
+          subjectPatternError: |
+            The subject "{subject}" must start with a lowercase letter or number
+            and be descriptive. Example title: "skill: tighten scope filter for config-only PRs".
+
+  body-sections:
+    name: Body sections & checklist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify body has required sections
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          node -e '
+            const body = process.env.PR_BODY || "";
+            const required = ["## Summary", "## Checklist"];
+            const missing = required.filter((s) => !body.includes(s));
+
+            const errors = [];
+            if (missing.length > 0) {
+              errors.push("PR body missing required sections:");
+              missing.forEach((s) => errors.push("  - " + s));
+            }
+
+            const ticked = (body.match(/- \[x\]/gi) || []).length;
+            if (ticked === 0) {
+              errors.push("PR checklist has zero ticked items. Review the template checklist and mark what applies.");
+            }
+
+            if (errors.length > 0) {
+              errors.push("");
+              errors.push("See .github/PULL_REQUEST_TEMPLATE.md for the expected structure.");
+              console.error(errors.join("\n"));
+              process.exit(1);
+            }
+            console.log("PR body OK: required sections present, checklist engaged (" + ticked + " ticked).");
+          '

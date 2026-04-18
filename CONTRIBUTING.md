@@ -31,6 +31,33 @@ before code lands. Issue templates are in `.github/ISSUE_TEMPLATE/`.
 4. Confirm the site still builds if you touched `site/`.
 5. Fill in the PR template so the reviewer has enough context.
 
+### PR title format
+
+Titles must use conventional-commit prefixes. The `pr-hygiene` GitHub
+Action blocks the merge until the title matches. Allowed types:
+
+| Prefix      | Use when                                            |
+|-------------|------------------------------------------------------|
+| `feat:`     | New user-facing capability                           |
+| `fix:`      | Bug fix                                              |
+| `chore:`    | Tooling, dependencies, non-functional maintenance    |
+| `docs:`     | Documentation-only                                   |
+| `sample:`   | Change to anything under `samples/`                  |
+| `skill:`    | Change to a review skill under `.claude/skills/`     |
+| `site:`     | Change to the Astro landing page under `site/`       |
+| `ci:`       | GitHub Actions workflow or CI-adjacent config        |
+| `refactor:` | Structure change without behavior change             |
+| `test:`     | Test-only change                                     |
+
+The subject after the prefix must start with a lowercase letter or number
+and be descriptive. Example: `skill: tighten scope filter for config-only PRs`.
+
+### PR body format
+
+The body must include `## Summary` and `## Checklist` sections from the PR
+template, and at least one checklist item must be ticked. The `pr-hygiene`
+check enforces this automatically.
+
 All PRs are subject to the repo's own AI PR review workflow (see
 `.github/workflows/pr-review.yml`). Findings appear as review comments; they
 are advisory, not blocking.
