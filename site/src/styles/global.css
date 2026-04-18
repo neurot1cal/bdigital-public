@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: theme('fontFamily.sans');
+    background-color: theme('colors.obsidian');
+    color: theme('colors.zinc.200');
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: theme('fontFamily.display');
+    letter-spacing: -0.01em;
+  }
+
+  code, pre {
+    font-family: theme('fontFamily.mono');
+  }
+
+  a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    color: theme('colors.zinc.300');
+  }
+}
+
+@layer components {
+  .container-inner {
+    @apply max-w-3xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}

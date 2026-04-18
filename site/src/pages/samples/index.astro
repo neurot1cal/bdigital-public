@@ -1,0 +1,93 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="samples · bdigital.public">
+  <section class="container-inner">
+    <p class="text-sm text-zinc-500 uppercase tracking-wider">samples</p>
+    <h1 class="font-display text-3xl sm:text-4xl font-bold text-snow mt-3 tracking-tight">
+      browse code samples
+    </h1>
+    <p class="text-lg text-zinc-400 mt-6 max-w-2xl leading-relaxed">
+      Self-contained, MIT-licensed examples from the engineering blog.
+    </p>
+  </section>
+
+  <section id="pr-review" class="container-inner mt-16">
+    <div class="border border-zinc-800 rounded-lg p-6 sm:p-8">
+      <div class="flex items-center gap-3 text-xs text-zinc-500 mb-3">
+        <span class="px-2 py-0.5 bg-zinc-900 text-zinc-400 rounded-sm">sample</span>
+        <span>ai · claude · github-actions</span>
+      </div>
+      <h2 class="font-display text-2xl font-semibold text-snow">
+        pr-review
+      </h2>
+      <p class="text-zinc-400 mt-3 leading-relaxed">
+        Automated pull request review built as structured Claude skills. Drop
+        the <code class="text-zinc-300">.github/workflows/pr-review.yml</code>
+        into your repo and it runs every skill in <code class="text-zinc-300">.claude/skills/</code>
+        on each new PR, posting findings as review comments. Ships with five
+        review skills covering correctness, test adequacy, design fit,
+        readability, and breaking-change impact.
+      </p>
+
+      <div class="mt-6 grid sm:grid-cols-2 gap-4 text-sm">
+        <div class="border border-zinc-900 rounded-sm p-4">
+          <h3 class="font-medium text-zinc-300 mb-2">what's included</h3>
+          <ul class="text-zinc-500 space-y-1">
+            <li>5 review skill files (markdown)</li>
+            <li>run-reviews.mjs wrapper script</li>
+            <li>Drop-in GitHub Actions workflow</li>
+            <li>README with setup and customization notes</li>
+          </ul>
+        </div>
+        <div class="border border-zinc-900 rounded-sm p-4">
+          <h3 class="font-medium text-zinc-300 mb-2">what you'll need</h3>
+          <ul class="text-zinc-500 space-y-1">
+            <li>Anthropic API key (repo secret)</li>
+            <li>Node 20+ on the runner</li>
+            <li>pull-requests: write permission</li>
+            <li>fetch-depth: 0 on checkout</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-4 text-sm">
+        <a
+          href="https://github.com/neurot1cal/bdigital-public/tree/main/samples/pr-review"
+          class="no-underline text-zinc-200 hover:text-snow"
+        >
+          view on github →
+        </a>
+        <a
+          href="https://tech.bdigitalmedia.io/blog/designing-ai-pr-review-claude-skills"
+          class="no-underline text-zinc-400 hover:text-zinc-200"
+        >
+          blog series part 1 →
+        </a>
+        <a
+          href="https://tech.bdigitalmedia.io/blog/diagnosing-ai-review-false-positives"
+          class="no-underline text-zinc-400 hover:text-zinc-200"
+        >
+          part 2 →
+        </a>
+        <a
+          href="https://tech.bdigitalmedia.io/blog/ai-code-review-fix-patterns"
+          class="no-underline text-zinc-400 hover:text-zinc-200"
+        >
+          part 3 →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-inner mt-12">
+    <p class="text-sm text-zinc-500">
+      More samples will land as the blog series grows. Propose one in an
+      <a href="https://github.com/neurot1cal/bdigital-public/issues/new/choose" class="text-zinc-300">
+        issue
+      </a>
+      .
+    </p>
+  </section>
+</Layout>

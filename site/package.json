@@ -1,0 +1,25 @@
+{
+  "name": "bdigital-public-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Landing page for bdigital-public code samples. Astro + Tailwind, deployed to Cloudflare Workers.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/tailwind": "^5.1.4",
+    "@tailwindcss/typography": "^0.5.16",
+    "astro": "^5.1.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "wrangler": "^3.99.0"
+  }
+}

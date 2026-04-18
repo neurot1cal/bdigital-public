@@ -1,0 +1,22 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-zinc-900 py-12">
+  <div class="container-inner flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 text-sm text-zinc-500">
+    <div>
+      <p class="font-display font-bold text-zinc-300">
+        bdigital<span class="text-zinc-600">.</span>public
+      </p>
+      <p class="mt-1">public code samples from the engineering blog</p>
+    </div>
+    <div class="flex flex-wrap gap-x-6 gap-y-2">
+      <a href="https://tech.bdigitalmedia.io" class="no-underline text-zinc-400 hover:text-snow">blog</a>
+      <a href="https://github.com/neurot1cal/bdigital-public" class="no-underline text-zinc-400 hover:text-snow">github</a>
+      <a href="/samples/" class="no-underline text-zinc-400 hover:text-snow">samples</a>
+    </div>
+  </div>
+  <div class="container-inner mt-8 text-xs text-zinc-600">
+    © {year} bdigital media · MIT licensed
+  </div>
+</footer>

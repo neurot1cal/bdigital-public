@@ -1,0 +1,8 @@
+# Default owner for everything in the repo.
+# Add per-directory overrides below as the repo grows.
+
+*                              @neurot1cal
+
+# Examples of future overrides:
+# samples/pr-review/            @neurot1cal @some-contributor
+# site/                         @neurot1cal

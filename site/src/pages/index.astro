@@ -1,0 +1,106 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const samples = [
+  {
+    slug: 'pr-review',
+    title: 'pr-review',
+    description:
+      'Automated pull request review built as structured Claude skills. Drop-in GitHub Actions workflow plus five review skills (correctness, test adequacy, design fit, readability, breaking-change impact).',
+    series: '3-part blog series',
+    href: '/samples/#pr-review',
+    blog: 'https://tech.bdigitalmedia.io/blog/designing-ai-pr-review-claude-skills',
+  },
+];
+---
+
+<Layout title="bdigital.public · code samples from the engineering blog">
+  <section class="container-inner">
+    <p class="text-sm text-zinc-500 uppercase tracking-wider">bdigital public</p>
+    <h1 class="font-display text-4xl sm:text-5xl font-bold text-snow mt-3 tracking-tight">
+      code samples from the engineering blog, generalized for reuse
+    </h1>
+    <p class="text-lg text-zinc-400 mt-6 leading-relaxed max-w-2xl">
+      Each sample is extracted from a real project, stripped of proprietary
+      context, and sized to be useful on its own. Pair a sample with the blog
+      post it ships with for the full walkthrough.
+    </p>
+
+    <div class="flex flex-wrap gap-3 mt-8">
+      <a
+        href="https://tech.bdigitalmedia.io"
+        class="no-underline bg-snow text-obsidian font-medium px-5 py-2.5 rounded-sm hover:bg-zinc-200 transition-colors"
+      >
+        read the blog
+      </a>
+      <a
+        href="/samples/"
+        class="no-underline border border-zinc-700 text-zinc-200 font-medium px-5 py-2.5 rounded-sm hover:border-zinc-500 hover:text-snow transition-colors"
+      >
+        browse samples
+      </a>
+    </div>
+  </section>
+
+  <section class="container-inner mt-20">
+    <h2 class="font-display text-2xl font-semibold text-snow mb-8">
+      featured sample
+    </h2>
+    <ul class="space-y-6">
+      {samples.map((s) => (
+        <li class="border border-zinc-900 rounded-lg p-6 hover:border-zinc-700 transition-colors">
+          <div class="flex items-center gap-3 text-xs text-zinc-500 mb-3">
+            <span class="px-2 py-0.5 bg-zinc-900 text-zinc-400 rounded-sm">sample</span>
+            <span>{s.series}</span>
+          </div>
+          <h3 class="font-display text-xl font-semibold text-snow">
+            <a href={s.href} class="no-underline hover:text-zinc-300">{s.title}</a>
+          </h3>
+          <p class="text-zinc-400 mt-3 leading-relaxed">{s.description}</p>
+          <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+            <a href={s.href} class="no-underline text-zinc-300 hover:text-snow">view sample →</a>
+            <a href={s.blog} class="no-underline text-zinc-500 hover:text-zinc-300">related blog post →</a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="container-inner mt-20">
+    <h2 class="font-display text-2xl font-semibold text-snow mb-6">
+      how to use this repo
+    </h2>
+    <div class="prose prose-invert prose-zinc max-w-none">
+      <ol class="text-zinc-400 leading-relaxed">
+        <li>Pick a sample that matches the blog post you are reading.</li>
+        <li>
+          Copy the sample directory into your own repository, or clone this one
+          and modify in place. Every sample is self-contained.
+        </li>
+        <li>
+          Read the sample's <code>README.md</code> for required secrets,
+          permissions, and customization points.
+        </li>
+        <li>
+          For the <code>pr-review</code> sample, set an
+          <code>ANTHROPIC_API_KEY</code> repo secret and ensure the workflow
+          has <code>pull-requests: write</code> permission.
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="container-inner mt-20">
+    <h2 class="font-display text-2xl font-semibold text-snow mb-6">
+      contributing
+    </h2>
+    <p class="text-zinc-400 leading-relaxed max-w-2xl">
+      New samples are welcome. Each should pair with a blog post, be free of
+      proprietary context, and follow the open-source structure laid out in
+      <a href="https://github.com/neurot1cal/bdigital-public/blob/main/CONTRIBUTING.md" class="text-zinc-200">
+        CONTRIBUTING.md
+      </a>
+      . Bug reports and generalization PRs are also welcome.
+    </p>
+  </section>
+</Layout>

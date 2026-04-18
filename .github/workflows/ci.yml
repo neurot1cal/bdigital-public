@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    name: Build site
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+
+  lint-skills:
+    name: Lint skill files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify each skill has the required sections
+        run: |
+          failed=0
+          for skill in samples/pr-review/.claude/skills/*.md; do
+            echo "Checking $skill"
+            for section in "## system prompt" "## detection rules" "## exclusion categories" "## evidence requirement" "## scope filter" "## output format"; do
+              if ! grep -qi "$section" "$skill"; then
+                echo "  MISSING: $section"
+                failed=1
+              fi
+            done
+          done
+          exit $failed
