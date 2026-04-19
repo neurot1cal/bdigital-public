@@ -1,0 +1,17 @@
+# To enable sponsorship options for this repository, uncomment and populate any
+# of the lines below. See GitHub's docs for the supported keys:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
+
+# github: [username]                # Replace with up to 4 GitHub Sponsors usernames
+# patreon: username                 # Replace with a single Patreon username
+# open_collective: project-name     # Replace with a single Open Collective name
+# ko_fi: username                   # Replace with a single Ko-fi username
+# tidelift: platform-name/package-name  # e.g. "npm/bdigital-public-site"
+# community_bridge: project-name    # Replace with a single Community Bridge project name
+# liberapay: username               # Replace with a single Liberapay username
+# issuehunt: username               # Replace with a single IssueHunt username
+# lfx_crowdfunding: project-name    # Replace with a single LFX Crowdfunding project name
+# polar: username                   # Replace with a single Polar username
+# buy_me_a_coffee: username         # Replace with a single Buy Me a Coffee username
+# thanks_dev: username              # Replace with a single thanks.dev username
+# custom: ["https://example.com/donate"]  # Up to 4 custom URLs

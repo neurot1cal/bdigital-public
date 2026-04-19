@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/neurot1cal/bdigital-public/blob/main/SECURITY.md
+    about: Do not file security findings in public issues. Follow the coordinated disclosure process in SECURITY.md.
+  - name: Read the blog series first
+    url: https://tech.bdigitalmedia.io/
+    about: Tutorial-level explanations of the samples in this repo. Start here if your question is "how does this work?" rather than "something is broken."

@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
 
 jobs:
   review:
@@ -53,7 +54,38 @@ jobs:
               console.log('No findings to post.');
               return;
             }
+
+            // Idempotency on synchronize: fetch existing review comments and
+            // skip any finding whose (path, line, skill) already matches an
+            // existing comment starting with `**<skill>**`.
+            const existing = await github.paginate(
+              github.rest.pulls.listReviewComments,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                per_page: 100,
+              }
+            );
+            const seen = new Set();
+            for (const c of existing) {
+              const body = c.body || '';
+              const m = body.match(/^\*\*([^*]+)\*\*/);
+              if (!m) continue;
+              const skill = m[1];
+              const line = c.line ?? c.original_line;
+              if (c.path != null && line != null) {
+                seen.add(`${c.path}::${line}::${skill}`);
+              }
+            }
+
+            const skipped = [];
             for (const f of findings) {
+              const key = `${f.file}::${f.line}::${f.skill}`;
+              if (seen.has(key)) {
+                console.log(`Skipping duplicate ${key}`);
+                continue;
+              }
               try {
                 await github.rest.pulls.createReviewComment({
                   owner: context.repo.owner,
@@ -64,7 +96,25 @@ jobs:
                   line: f.line,
                   commit_id: context.payload.pull_request.head.sha,
                 });
+                seen.add(key);
               } catch (e) {
                 console.log(`Skipping ${f.file}:${f.line} (${e.message})`);
+                skipped.push(f);
               }
+            }
+
+            // Out-of-diff-hunk fallback: collect anything that failed inline
+            // posting (typically because the flagged line is outside the
+            // diff hunk) and post a single issue-level summary comment.
+            if (skipped.length > 0) {
+              const lines = skipped.map(
+                (f) => `- **${f.skill}** (${f.file}:${f.line}): ${f.rationale}`
+              );
+              const body = `### Findings that couldn't be posted inline\n\n${lines.join('\n')}`;
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
             }

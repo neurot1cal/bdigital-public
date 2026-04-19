@@ -76,9 +76,9 @@ If a formatter disagrees with a style note, the formatter wins.
 
 ## Skill-authoring guide (for `samples/pr-review/`)
 
-Every review skill in this repo has the same seven-section shape. Please match
-it so the bulk-editing and cluster-analysis workflows described in the blog
-series keep working.
+Every review skill in this repo has the same shape: frontmatter plus six
+named sections. Please match it so the bulk-editing and cluster-analysis
+workflows described in the blog series keep working.
 
 1. **Frontmatter** with `name`, `description`, and optional `tags`.
 2. **System prompt** setting the reviewer's role in one to three sentences.

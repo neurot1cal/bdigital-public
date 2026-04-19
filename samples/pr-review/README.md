@@ -4,10 +4,11 @@ Automated pull request review built as structured Claude skills.
 
 This sample accompanies the three-part blog series on
 [tech.bdigitalmedia.io](https://tech.bdigitalmedia.io/blog/designing-ai-pr-review-claude-skills).
-Each review skill is a versioned markdown file with named sections
-(detection rules, exclusion categories, evidence requirement, scope filter,
-output format). When a skill misfires, the fix lives inside a specific
-section of the markdown, not in a prompt rewrite.
+Each review skill is a versioned markdown file with frontmatter plus
+six named sections (system prompt, detection rules, exclusion categories,
+evidence requirement, scope filter, output format). When a skill misfires,
+the fix lives inside a specific section of the markdown, not in a prompt
+rewrite.
 
 ## What is included
 
@@ -61,10 +62,34 @@ model rather than cloning one from a public sample.
    `opened` and `synchronize`. Expect each review skill to take roughly
    15–30 seconds to run.
 
+6. **Bump the model ID when a newer dated release lands.** The wrapper
+   pins a concrete dated Claude model ID (see the `model:` line in
+   `scripts/run-reviews.mjs`). Bare aliases like `claude-sonnet-4-6` can
+   404 against the public Messages API; always use the latest dated
+   release (for example `claude-sonnet-4-6-20260201`) and update the
+   string in `run-reviews.mjs` whenever Anthropic publishes a newer
+   dated release.
+
+### Fork PRs
+
+Pull requests opened from a fork trigger the `pull_request` event, but
+fork workflows run with a read-only `GITHUB_TOKEN`, and repository
+secrets (including `ANTHROPIC_API_KEY`) are not exposed to fork PRs for
+security reasons. As a result, this workflow will fail on fork PRs until
+a maintainer re-runs the workflow from the PR page (which runs it in the
+base repository's context with the secret available).
+
+We do not recommend swapping `pull_request` for `pull_request_target` as
+a workaround. `pull_request_target` runs against the base branch's
+workflow and checks out fork code with repo secrets present, which is a
+well-documented arbitrary-code-execution risk. Keep the workflow on
+`pull_request` and accept the manual re-run on fork contributions.
+
 ## Customizing
 
 - **Add a skill.** Drop a new `.md` file into `.claude/skills/` following
-  the seven-section shape. The wrapper picks it up automatically.
+  the frontmatter-plus-six-named-sections shape. The wrapper picks it up
+  automatically.
 - **Tune a skill.** Open the markdown file, find the named section, and
   edit. Detection rules live in one section, exclusions in another, scope
   filters in a third. Changes land as normal PRs.

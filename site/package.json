@@ -4,6 +4,16 @@
   "private": true,
   "type": "module",
   "description": "Landing page for bdigital-public code samples. Astro + Tailwind, deployed to Cloudflare Workers.",
+  "license": "MIT",
+  "homepage": "https://public.bdigitalmedia.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neurot1cal/bdigital-public.git",
+    "directory": "site"
+  },
+  "bugs": {
+    "url": "https://github.com/neurot1cal/bdigital-public/issues"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
