@@ -4,7 +4,38 @@ updates:
     directory: "/site"
     schedule:
       interval: "weekly"
+    # Ignore major-version bumps across all packages. Major-version updates
+    # frequently require real migration work (Astro 5->6, Tailwind 3->4,
+    # TypeScript 5->6, etc.) and should be handled as a deliberate PR, not
+    # an auto-generated dependency bump.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    # Group remaining patch + minor updates so we get one PR per week
+    # rather than ten.
+    groups:
+      site-deps:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    # Same rationale for GitHub Actions: major version bumps are rare
+    # and usually involve real behavior changes (e.g. checkout@v6 drops
+    # Node 16 support). Prefer deliberate upgrades.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "ci"
+      include: "scope"

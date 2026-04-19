@@ -18,6 +18,9 @@ jobs:
   title-format:
     name: Title format (conventional commits)
     runs-on: ubuntu-latest
+    # Dependabot opens PRs with a prefix the scheme supports (`build(deps):`
+    # etc.), so we add `build` to the allowlist below. No need to exempt
+    # Dependabot entirely; its titles already follow conventional commits.
     permissions:
       pull-requests: read
     steps:
@@ -31,6 +34,7 @@ jobs:
           types: |
             feat
             fix
+            build
             chore
             docs
             sample
@@ -48,6 +52,9 @@ jobs:
   body-sections:
     name: Body sections & checklist
     runs-on: ubuntu-latest
+    # Skip this job for bot-opened PRs (Dependabot, etc.). Bots do not fill
+    # in our PR template; the checks are meant for human contributors.
+    if: github.event.pull_request.user.type != 'Bot'
     permissions:
       pull-requests: read
       contents: read

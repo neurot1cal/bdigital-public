@@ -40,7 +40,8 @@ Action blocks the merge until the title matches. Allowed types:
 |-------------|------------------------------------------------------|
 | `feat:`     | New user-facing capability                           |
 | `fix:`      | Bug fix                                              |
-| `chore:`    | Tooling, dependencies, non-functional maintenance    |
+| `build:`    | Dependency bumps, build-system changes (Dependabot)  |
+| `chore:`    | Tooling, non-functional maintenance                  |
 | `docs:`     | Documentation-only                                   |
 | `sample:`   | Change to anything under `samples/`                  |
 | `skill:`    | Change to a review skill under `.claude/skills/`     |
