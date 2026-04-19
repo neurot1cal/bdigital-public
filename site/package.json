@@ -22,7 +22,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.8",
     "@astrojs/tailwind": "^5.1.4",
     "@tailwindcss/typography": "^0.5.16",
     "astro": "^5.1.1",
@@ -30,6 +30,9 @@
     "typescript": "^5.7.2"
   },
   "devDependencies": {
-    "wrangler": "^3.99.0"
+    "wrangler": "^4.83.0"
+  },
+  "overrides": {
+    "yaml": "^2.8.3"
   }
 }
