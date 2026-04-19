@@ -1,0 +1,68 @@
+{
+  "skill": "breaking-change-reviewer",
+  "description": "Evaluates whether the breaking-change-reviewer skill catches contract drift on public exports while ignoring internal-only changes and purely additive optional fields.",
+  "cases": [
+    {
+      "name": "required-param-added-to-public-export",
+      "type": "positive",
+      "diff": "diff --git a/src/index.ts b/src/index.ts\nindex 1111111..2222222 100644\n--- a/src/index.ts\n+++ b/src/index.ts\n@@ -1,4 +1,4 @@\n-export { createClient } from './client';\n+export { createClient } from './client';\n export { version } from './version';\ndiff --git a/src/client.ts b/src/client.ts\nindex 3333333..4444444 100644\n--- a/src/client.ts\n+++ b/src/client.ts\n@@ -1,10 +1,14 @@\n import { Config } from './types';\n \n-/**\n- * Create a new client. The default region is 'us-east-1'.\n- */\n-export function createClient(apiKey: string): Client {\n-  return new Client({ apiKey, region: 'us-east-1' });\n-}\n+/**\n+ * Create a new client.\n+ */\n+export function createClient(apiKey: string, region: string): Client {\n+  return new Client({ apiKey, region });\n+}\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "high",
+            "file": "src/client.ts",
+            "line": 7,
+            "rationale_contains": "required"
+          }
+        ]
+      },
+      "notes": "Public export at the package barrel (src/index.ts) gained a required positional parameter. Every existing caller now fails to type-check. Classic breaking change."
+    },
+    {
+      "name": "removed-public-export-no-deprecation",
+      "type": "positive",
+      "diff": "diff --git a/src/index.ts b/src/index.ts\nindex aaaaaaa..bbbbbbb 100644\n--- a/src/index.ts\n+++ b/src/index.ts\n@@ -1,5 +1,4 @@\n export { createClient } from './client';\n-export { legacyCreateClient } from './client';\n export { version } from './version';\ndiff --git a/src/client.ts b/src/client.ts\nindex ccccccc..ddddddd 100644\n--- a/src/client.ts\n+++ b/src/client.ts\n@@ -10,8 +10,4 @@ export function createClient(apiKey: string, region: string): Client {\n   return new Client({ apiKey, region });\n }\n \n-export function legacyCreateClient(apiKey: string): Client {\n-  return createClient(apiKey, 'us-east-1');\n-}\n-\n export { Client } from './client-impl';\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "high",
+            "file": "src/index.ts",
+            "line": 2,
+            "rationale_contains": "remov"
+          }
+        ]
+      },
+      "notes": "`legacyCreateClient` was a public export at the package barrel and is being removed outright with no @deprecated pass or major-version note. Breaking."
+    },
+    {
+      "name": "additive-optional-field-on-internal-helper",
+      "type": "negative",
+      "diff": "diff --git a/src/internal/telemetry.ts b/src/internal/telemetry.ts\nindex eeeeeee..fffffff 100644\n--- a/src/internal/telemetry.ts\n+++ b/src/internal/telemetry.ts\n@@ -1,10 +1,14 @@\n // Internal helper; not re-exported from src/index.ts.\n \n-interface TelemetryEvent {\n-  name: string;\n-  timestamp: number;\n-}\n+interface TelemetryEvent {\n+  name: string;\n+  timestamp: number;\n+  /** Optional correlation id for request tracing. */\n+  correlationId?: string;\n+}\n \n export function emit(event: TelemetryEvent): void {\n   transport.send(event);\n }\n",
+      "expected": { "findings": [] },
+      "notes": "Internal-only helper (`src/internal/`, not re-exported) gains a purely additive optional field. Not a breaking change under any reasonable contract."
+    },
+    {
+      "name": "rename-internal-file-no-barrel-impact",
+      "type": "negative",
+      "diff": "diff --git a/src/internal/format-url.ts b/src/internal/build-url.ts\nsimilarity index 98%\nrename from src/internal/format-url.ts\nrename to src/internal/build-url.ts\n--- a/src/internal/format-url.ts\n+++ b/src/internal/build-url.ts\n@@ -1,6 +1,6 @@\n-// Format a URL from host and path.\n-export function formatUrl(host: string, path: string): string {\n+// Build a URL from host and path.\n+export function buildUrl(host: string, path: string): string {\n   return `${host.replace(/\\/$/, '')}/${path.replace(/^\\//, '')}`;\n }\ndiff --git a/src/routes/users.ts b/src/routes/users.ts\nindex aabbccd..ddeeefff 100644\n--- a/src/routes/users.ts\n+++ b/src/routes/users.ts\n@@ -1,4 +1,4 @@\n-import { formatUrl } from '../internal/format-url';\n+import { buildUrl } from '../internal/build-url';\n",
+      "expected": { "findings": [] },
+      "notes": "File rename + symbol rename of an internal-only helper. No barrel export exists for it, so no external consumer is affected. Not a breaking change."
+    },
+    {
+      "name": "widened-return-type-on-public-api",
+      "type": "positive",
+      "diff": "diff --git a/src/api/parse.ts b/src/api/parse.ts\nindex 1aaabbb..2cccddd 100644\n--- a/src/api/parse.ts\n+++ b/src/api/parse.ts\n@@ -1,10 +1,14 @@\n import { ParsedToken } from './types';\n \n-/**\n- * Parse a bearer token. Returns the parsed token.\n- */\n-export function parseBearer(header: string): ParsedToken {\n-  return parseOrThrow(header);\n-}\n+/**\n+ * Parse a bearer token. Returns the parsed token, or null for malformed input.\n+ */\n+export function parseBearer(header: string): ParsedToken | null {\n+  try { return parseOrThrow(header); } catch { return null; }\n+}\ndiff --git a/src/index.ts b/src/index.ts\nindex 5555aaa..5555bbb 100644\n--- a/src/index.ts\n+++ b/src/index.ts\n@@ -1,3 +1,4 @@\n export { createClient } from './client';\n+export { parseBearer } from './api/parse';\n export { version } from './version';\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "high",
+            "file": "src/api/parse.ts",
+            "line": 7,
+            "rationale_contains": "return type"
+          }
+        ]
+      },
+      "notes": "Return type widened from ParsedToken to ParsedToken | null on a public export. Every caller that wrote `parseBearer(h).sub` now type-errors. Classic signature-widening breaking change."
+    }
+  ]
+}

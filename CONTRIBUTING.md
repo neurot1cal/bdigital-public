@@ -77,7 +77,7 @@ If a formatter disagrees with a style note, the formatter wins.
 
 ## Skill-authoring guide (for `samples/pr-review/`)
 
-Every review skill in this repo has the same shape: frontmatter plus six
+Every review skill in this repo has the same shape: frontmatter plus seven
 named sections. Please match it so the bulk-editing and cluster-analysis
 workflows described in the blog series keep working.
 
@@ -85,13 +85,23 @@ workflows described in the blog series keep working.
 2. **System prompt** setting the reviewer's role in one to three sentences.
 3. **Detection rules**: bulleted list of what to flag, each with a concrete
    example.
-4. **Exclusion categories**: five to six named categories, each with examples,
+4. **Examples**: two or three inline reference cases, each a small diff
+   paired with an expected finding (or `[]` for a negative case). Keep
+   the count small; the full labeled corpus lives in the eval fixture,
+   not here.
+5. **Exclusion categories**: five to six named categories, each with examples,
    grouped by reason rather than by individual file name.
-5. **Evidence requirement**: explicit verification gate, ending with "silence
+6. **Evidence requirement**: explicit verification gate, ending with "silence
    is correct when evidence is unavailable."
-6. **Scope filter**: deterministic path-based early exit.
-7. **Output format**: JSON shape the skill must emit, matching
+7. **Scope filter**: deterministic path-based early exit.
+8. **Output format**: JSON shape the skill must emit, matching
    `{ skill, severity, file, line, rationale, evidence }`.
+
+Each new skill also gets a fixture at `samples/pr-review/evals/<skill>.json`
+with 3–5 labeled cases, and is verified by `scripts/run-evals.mjs`
+before merge. Include both the inline Examples (duplicated in the
+fixture) and additional edge cases that stress scope filters and
+exclusion categories.
 
 Keep skills short. Any skill longer than about 200 lines usually has two
 responsibilities and should split.

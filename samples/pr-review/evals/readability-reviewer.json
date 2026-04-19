@@ -1,0 +1,52 @@
+{
+  "skill": "readability-reviewer",
+  "description": "Evaluates whether the readability-reviewer skill catches lying names and ambiguous parameters without nagging on trivial renames or cosmetic cleanup.",
+  "cases": [
+    {
+      "name": "lying-name-process-normalizes-emails",
+      "type": "positive",
+      "diff": "diff --git a/src/users/import.ts b/src/users/import.ts\nindex 1a1a1a..2b2b2b 100644\n--- a/src/users/import.ts\n+++ b/src/users/import.ts\n@@ -1,10 +1,16 @@\n import { RawUser, User } from './types';\n \n-export function process(raw: RawUser): User {\n-  return { ...raw, email: raw.email };\n-}\n+/**\n+ * Normalize and deduplicate-ready email string for a raw user record.\n+ */\n+export function process(raw: RawUser): User {\n+  const email = raw.email.trim().toLowerCase();\n+  return { ...raw, email };\n+}\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "medium",
+            "file": "src/users/import.ts",
+            "line": 6,
+            "rationale_contains": "name"
+          }
+        ]
+      },
+      "notes": "Function is exported as `process` but it specifically normalizes emails. The name promises far more than it delivers; the skill should flag the misleading name."
+    },
+    {
+      "name": "ambiguous-boolean-parameter",
+      "type": "positive",
+      "diff": "diff --git a/src/notifications/send.ts b/src/notifications/send.ts\nindex 3c3c3c..4d4d4d 100644\n--- a/src/notifications/send.ts\n+++ b/src/notifications/send.ts\n@@ -1,9 +1,13 @@\n import { Message } from './types';\n \n-export function send(msg: Message): Promise<void> {\n-  return transport.deliver(msg);\n-}\n+/**\n+ * Send a message. Pass `true` to skip the rate limiter for system notifications.\n+ */\n+export function send(msg: Message, flag: boolean): Promise<void> {\n+  if (flag) return transport.deliverUnthrottled(msg);\n+  return transport.deliver(msg);\n+}\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "medium",
+            "file": "src/notifications/send.ts",
+            "line": 7,
+            "rationale_contains": "boolean"
+          }
+        ]
+      },
+      "notes": "Callers will write `send(msg, true)` with no hint what true means. Ambiguous boolean parameter; the docstring shifts the burden to the reader. Common readability smell."
+    },
+    {
+      "name": "trivial-rename-only",
+      "type": "negative",
+      "diff": "diff --git a/src/cart/total.ts b/src/cart/total.ts\nindex 5e5e5e..6f6f6f 100644\n--- a/src/cart/total.ts\n+++ b/src/cart/total.ts\n@@ -1,7 +1,7 @@\n import { CartItem } from './types';\n \n-export function sum(items: CartItem[]): number {\n-  return items.reduce((acc, i) => acc + i.price * i.qty, 0);\n+export function sumLineItems(items: CartItem[]): number {\n+  return items.reduce((acc, i) => acc + i.price * i.qty, 0);\n }\n",
+      "expected": { "findings": [] },
+      "notes": "Rename from `sum` to the more descriptive `sumLineItems`. No behavior change, no new smell introduced. Skill should stay silent."
+    },
+    {
+      "name": "extracted-named-constant",
+      "type": "negative",
+      "diff": "diff --git a/src/retry/policy.ts b/src/retry/policy.ts\nindex 7a7a7a..8b8b8b 100644\n--- a/src/retry/policy.ts\n+++ b/src/retry/policy.ts\n@@ -1,8 +1,11 @@\n+const DEFAULT_MAX_ATTEMPTS = 3;\n+\n export function shouldRetry(attempt: number): boolean {\n-  return attempt < 3;\n+  return attempt < DEFAULT_MAX_ATTEMPTS;\n }\n",
+      "expected": { "findings": [] },
+      "notes": "Magic number replaced with a named constant. Strictly a readability improvement; there is nothing to flag."
+    }
+  ]
+}

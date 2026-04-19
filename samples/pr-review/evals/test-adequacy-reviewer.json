@@ -1,0 +1,68 @@
+{
+  "skill": "test-adequacy-reviewer",
+  "description": "Evaluates whether the test-adequacy-reviewer skill flags untested public changes and outdated tests without nagging on non-logic edits.",
+  "cases": [
+    {
+      "name": "new-public-function-no-test",
+      "type": "positive",
+      "diff": "diff --git a/src/discount/apply.ts b/src/discount/apply.ts\nindex 1000aaa..2000bbb 100644\n--- a/src/discount/apply.ts\n+++ b/src/discount/apply.ts\n@@ -1,6 +1,18 @@\n import { Order } from './types';\n \n export function totalAfterDiscount(order: Order): number {\n   return order.subtotal - order.discount;\n }\n+\n+/**\n+ * Apply a stacked coupon on top of the existing discount.\n+ * Public API used by the checkout route.\n+ */\n+export function applyStackedCoupon(order: Order, coupon: { percent: number }): Order {\n+  const extra = order.subtotal * (coupon.percent / 100);\n+  return {\n+    ...order,\n+    discount: order.discount + extra,\n+  };\n+}\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "medium",
+            "file": "src/discount/apply.ts",
+            "line": 11,
+            "rationale_contains": "no test"
+          }
+        ]
+      },
+      "notes": "New exported function with no accompanying test file change. The skill should flag the missing test for the newly added public behavior."
+    },
+    {
+      "name": "changed-behavior-outdated-test",
+      "type": "positive",
+      "diff": "diff --git a/src/tax/compute.ts b/src/tax/compute.ts\nindex 3000ccc..4000ddd 100644\n--- a/src/tax/compute.ts\n+++ b/src/tax/compute.ts\n@@ -1,7 +1,11 @@\n import { LineItem } from './types';\n \n-export function computeTax(items: LineItem[], rate: number): number {\n-  const subtotal = items.reduce((acc, i) => acc + i.price * i.qty, 0);\n-  return subtotal * rate;\n-}\n+export function computeTax(items: LineItem[], rate: number): number {\n+  const subtotal = items.reduce((acc, i) => acc + i.price * i.qty, 0);\n+  // Round to cents to match the payments processor.\n+  return Math.round(subtotal * rate * 100) / 100;\n+}\ndiff --git a/src/tax/compute.test.ts b/src/tax/compute.test.ts\nindex 5000eee..5000eee 100644\n--- a/src/tax/compute.test.ts\n+++ b/src/tax/compute.test.ts\n@@ -4,6 +4,6 @@ import { computeTax } from './compute';\n \n test('sums line items and applies rate', () => {\n   const items = [{ price: 10, qty: 2 }];\n-  expect(computeTax(items, 0.0825)).toBe(1.65);\n+  expect(computeTax(items, 0.0825)).toBe(1.65);\n });\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "medium",
+            "file": "src/tax/compute.test.ts",
+            "line": 6,
+            "rationale_contains": "rounding"
+          }
+        ]
+      },
+      "notes": "Behavior changed (now rounds to cents); the existing test was not updated to exercise the new rounding logic. Passes by coincidence because 10*2*0.0825 = 1.65 exactly."
+    },
+    {
+      "name": "snapshot-only-verification",
+      "type": "positive",
+      "diff": "diff --git a/src/report/summarize.ts b/src/report/summarize.ts\nindex 6000fff..7000aaa 100644\n--- a/src/report/summarize.ts\n+++ b/src/report/summarize.ts\n@@ -1,8 +1,13 @@\n import { Row } from './types';\n \n export function summarize(rows: Row[]): { total: number; avg: number } {\n-  const total = rows.reduce((acc, r) => acc + r.amount, 0);\n-  return { total, avg: total / rows.length };\n+  const total = rows.reduce((acc, r) => acc + r.amount, 0);\n+  const avg = rows.length === 0 ? 0 : total / rows.length;\n+  return { total, avg };\n }\ndiff --git a/src/report/summarize.test.ts b/src/report/summarize.test.ts\nindex 7000bbb..7000ccc 100644\n--- a/src/report/summarize.test.ts\n+++ b/src/report/summarize.test.ts\n@@ -5,4 +5,6 @@ import { summarize } from './summarize';\n test('summary matches snapshot', () => {\n   const rows = [{ amount: 10 }, { amount: 20 }];\n   expect(summarize(rows)).toMatchSnapshot();\n });\n+\n+test('empty rows produce snapshot', () => {\n+  expect(summarize([])).toMatchSnapshot();\n+});\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "medium",
+            "file": "src/report/summarize.test.ts",
+            "line": 9,
+            "rationale_contains": "snapshot"
+          }
+        ]
+      },
+      "notes": "Division-by-zero fix (NaN -> 0) is verified only by toMatchSnapshot(), not by an explicit expect(avg).toBe(0). Snapshot-only verification of logic changes is weak."
+    },
+    {
+      "name": "private-helper-refactor",
+      "type": "negative",
+      "diff": "diff --git a/src/util/format.ts b/src/util/format.ts\nindex 8000ddd..9000eee 100644\n--- a/src/util/format.ts\n+++ b/src/util/format.ts\n@@ -1,8 +1,11 @@\n // Internal helper; not exported.\n-function pad2(n: number): string {\n-  return n < 10 ? `0${n}` : String(n);\n-}\n+function pad2(n: number): string {\n+  return String(n).padStart(2, '0');\n+}\n \n export function formatClock(h: number, m: number): string {\n   return `${pad2(h)}:${pad2(m)}`;\n }\n",
+      "expected": { "findings": [] },
+      "notes": "Internal helper refactor with no behavioral change, covered transitively by existing formatClock tests. Skill should not demand a new test."
+    },
+    {
+      "name": "docs-only-change",
+      "type": "negative",
+      "diff": "diff --git a/src/auth/login.ts b/src/auth/login.ts\nindex aaaa000..bbbb111 100644\n--- a/src/auth/login.ts\n+++ b/src/auth/login.ts\n@@ -1,8 +1,11 @@\n import { Credentials } from './types';\n \n-// Login the user and return a session token.\n+/**\n+ * Log the user in and return a session token.\n+ * Throws AuthError on invalid credentials.\n+ */\n export async function login(creds: Credentials): Promise<string> {\n   const session = await authenticate(creds);\n   return session.token;\n }\n",
+      "expected": { "findings": [] },
+      "notes": "Pure docstring improvement, no behavior change. Nothing to test."
+    }
+  ]
+}

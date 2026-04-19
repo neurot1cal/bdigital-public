@@ -40,6 +40,50 @@ Flag each of the following when you see it in the diff:
 - **Documentation drift.** The diff changes public behavior but leaves an
   existing documentation file describing the old behavior unchanged.
 
+## Examples
+
+Two reference cases that calibrate the detection rules. The skill should produce the expected output for each without additional clarification.
+
+### Positive case (should flag)
+
+```diff
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -1,8 +1,8 @@
+ export type Customer = { id: string; name: string };
+
+-export function createInvoice(customer: Customer, amount: number) {
++export function createInvoice(customer: Customer, amount: number, currency: string) {
+   return {
+     id: crypto.randomUUID(),
+     customer,
+     amount,
++    currency,
+     createdAt: new Date().toISOString(),
+   };
+ }
+```
+
+**Expected:** a finding of roughly the shape `{ severity: "high", file: "src/index.ts", line: 3, rationale: "createInvoice is exported from the package entry and gained a required currency parameter with no default, no version bump in package.json, and no CHANGELOG entry; every existing caller will fail to type-check." }`.
+
+### Negative case (should not flag)
+
+```diff
+--- a/src/internal/batch.ts
++++ b/src/internal/batch.ts
+@@ -4,8 +4,8 @@ type BatchOptions = {
+   maxConcurrency: number;
+ };
+
+-export function runBatch(items: string[], opts: BatchOptions) {
++export function runBatch(items: string[], opts: BatchOptions, retries = 0) {
+   // ...
+   return items.map((item) => process(item, opts));
+ }
+```
+
+**Expected:** `[]`. `src/internal/batch.ts` is under an `internal/` path and is not re-exported from the package entry, and the new parameter has a default, so external consumers are unaffected.
+
 ## exclusion categories
 
 Do not flag any of the following:

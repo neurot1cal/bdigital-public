@@ -36,6 +36,51 @@ Flag each of the following when you see it in the diff:
   tests on private helpers were added or modified, with no test that
   exercises the public entry point.
 
+## Examples
+
+Two reference cases that calibrate the detection rules. The skill should produce the expected output for each without additional clarification.
+
+### Positive case (should flag)
+
+```diff
+--- a/src/config.ts
++++ b/src/config.ts
+@@ -1,6 +1,19 @@
+ import { readFileSync } from "node:fs";
+
+ export type AppConfig = {
+   port: number;
+   logLevel: "debug" | "info" | "warn";
+ };
++
++export function parseConfig(raw: string): AppConfig {
++  const obj = JSON.parse(raw);
++  if (typeof obj.port !== "number") {
++    throw new Error("port must be a number");
++  }
++  const level = obj.logLevel ?? "info";
++  if (!["debug", "info", "warn"].includes(level)) {
++    throw new Error(`invalid logLevel: ${level}`);
++  }
++  return { port: obj.port, logLevel: level };
++}
+```
+
+**Expected:** a finding of roughly the shape `{ severity: "medium", file: "src/config.ts", line: 8, rationale: "parseConfig is a new exported function with two validation branches and a default-application path, and no test file in the diff or a grep for 'parseConfig' under tests/ covers any of them." }`.
+
+### Negative case (should not flag)
+
+```diff
+--- a/src/config.ts
++++ b/src/config.ts
+@@ -30,7 +30,7 @@ function _normalizeKey(key: string): string {
+-  return key.trim().toLowerCase();
++  return key.trim().toLowerCase().replace(/[\s_]+/g, "-");
+ }
+```
+
+**Expected:** `[]`. `_normalizeKey` is a private helper already reached through `parseConfig`'s existing tests, which assert the final normalized shape and would fail if this transformation regresses.
+
 ## exclusion categories
 
 Do not flag any of the following:

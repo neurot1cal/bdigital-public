@@ -1,0 +1,68 @@
+{
+  "skill": "correctness-reviewer",
+  "description": "Evaluates whether the correctness-reviewer skill catches intent/implementation mismatches and common logic bugs without flagging correct code.",
+  "cases": [
+    {
+      "name": "filter-active-users-returns-all",
+      "type": "positive",
+      "diff": "diff --git a/src/users/filter.ts b/src/users/filter.ts\nindex 1a2b3c4..5d6e7f8 100644\n--- a/src/users/filter.ts\n+++ b/src/users/filter.ts\n@@ -1,9 +1,14 @@\n import { User } from './types';\n \n-export function filterActiveUsers(users: User[]): User[] {\n-  return users.filter((u) => u.isActive);\n-}\n+/**\n+ * Return only users whose isActive flag is true.\n+ */\n+export function filterActiveUsers(users: User[]): User[] {\n+  return users.filter((u) => {\n+    u.isActive;\n+    return true;\n+  });\n+}\n \n export function countActiveUsers(users: User[]): number {\n   return filterActiveUsers(users).length;\n }\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "high",
+            "file": "src/users/filter.ts",
+            "line": 9,
+            "rationale_contains": "returns all users"
+          }
+        ]
+      },
+      "notes": "Function name and docstring promise filtering; predicate ignores u.isActive and unconditionally returns true. Classic intent/implementation mismatch that the skill must catch."
+    },
+    {
+      "name": "off-by-one-slice-range",
+      "type": "positive",
+      "diff": "diff --git a/src/pagination/page.ts b/src/pagination/page.ts\nindex aaaa111..bbbb222 100644\n--- a/src/pagination/page.ts\n+++ b/src/pagination/page.ts\n@@ -3,8 +3,12 @@ import { Item } from './types';\n /**\n  * Return the items on the given 1-indexed page, with `pageSize` per page.\n  */\n-export function getPage(items: Item[], page: number, pageSize: number): Item[] {\n-  const start = (page - 1) * pageSize;\n-  return items.slice(start, start + pageSize);\n-}\n+export function getPage(items: Item[], page: number, pageSize: number): Item[] {\n+  const start = (page - 1) * pageSize;\n+  const end = start + pageSize - 1;\n+  return items.slice(start, end);\n+}\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "high",
+            "file": "src/pagination/page.ts",
+            "line": 9,
+            "rationale_contains": "off-by-one"
+          }
+        ]
+      },
+      "notes": "slice(start, end) is end-exclusive; the old code was correct, the new code drops the last element of every page. Off-by-one logic bug."
+    },
+    {
+      "name": "unhandled-null-on-public-api",
+      "type": "positive",
+      "diff": "diff --git a/src/api/resolve.ts b/src/api/resolve.ts\nindex cccc333..dddd444 100644\n--- a/src/api/resolve.ts\n+++ b/src/api/resolve.ts\n@@ -1,10 +1,15 @@\n import { Config } from './types';\n \n-export function resolveEndpoint(config: Config): string {\n-  if (!config.baseUrl) {\n-    throw new Error('baseUrl is required');\n-  }\n-  return `${config.baseUrl.replace(/\\/$/, '')}/v1`;\n-}\n+/**\n+ * Resolve the versioned endpoint URL from a Config.\n+ * Accepts an optional config; returns the default public endpoint if omitted.\n+ */\n+export function resolveEndpoint(config: Config | null): string {\n+  const base = config.baseUrl.replace(/\\/$/, '');\n+  return `${base}/v1`;\n+}\n",
+      "expected": {
+        "findings": [
+          {
+            "severity": "high",
+            "file": "src/api/resolve.ts",
+            "line": 10,
+            "rationale_contains": "null"
+          }
+        ]
+      },
+      "notes": "Signature was widened to accept null, docstring says null is allowed, but body dereferences config.baseUrl unconditionally. NPE on a public API."
+    },
+    {
+      "name": "correct-refactor-of-internal-helper",
+      "type": "negative",
+      "diff": "diff --git a/src/util/clamp.ts b/src/util/clamp.ts\nindex eeee555..ffff666 100644\n--- a/src/util/clamp.ts\n+++ b/src/util/clamp.ts\n@@ -1,5 +1,7 @@\n-export function clamp(n: number, min: number, max: number): number {\n-  if (n < min) return min;\n-  if (n > max) return max;\n-  return n;\n-}\n+export function clamp(n: number, min: number, max: number): number {\n+  return Math.min(Math.max(n, min), max);\n+}\n",
+      "expected": { "findings": [] },
+      "notes": "Equivalent refactor; Math.min/Math.max preserve exact semantics including NaN propagation parity with the original. No correctness issue."
+    },
+    {
+      "name": "config-only-change",
+      "type": "negative",
+      "diff": "diff --git a/tsconfig.json b/tsconfig.json\nindex 1111aaa..2222bbb 100644\n--- a/tsconfig.json\n+++ b/tsconfig.json\n@@ -3,7 +3,8 @@\n     \"target\": \"ES2022\",\n     \"module\": \"NodeNext\",\n     \"strict\": true,\n-    \"noUnusedLocals\": false\n+    \"noUnusedLocals\": true,\n+    \"noUnusedParameters\": true\n   },\n   \"include\": [\"src/**/*.ts\"]\n }\n",
+      "expected": { "findings": [] },
+      "notes": "Pure config change in tsconfig.json. Correctness-reviewer's scope filter should exclude config-only PRs, so the skill must stay silent here."
+    }
+  ]
+}

@@ -39,6 +39,46 @@ Flag each of the following when you see it in the diff:
 - **Dead code left behind.** Commented-out blocks, unused imports,
   unreachable branches introduced by the diff.
 
+## Examples
+
+Two reference cases that calibrate the detection rules. The skill should produce the expected output for each without additional clarification.
+
+### Positive case (should flag)
+
+```diff
+--- a/src/users/email.ts
++++ b/src/users/email.ts
+@@ -4,8 +4,8 @@ export type EmailInput = {
+   raw: string;
+ };
+
+-export function normalizeEmail(input: EmailInput): string {
++export function process(input: EmailInput): string {
+   const trimmed = input.raw.trim().toLowerCase();
+   const [local, domain] = trimmed.split("@");
+   return `${local}@${domain.replace(/\.+$/, "")}`;
+ }
+```
+
+**Expected:** a finding of roughly the shape `{ severity: "medium", file: "src/users/email.ts", line: 7, rationale: "The rename from normalizeEmail to process drops the domain from the name; the body still lowercases and cleans an email address, so call sites now read as process(input) without signaling what is being processed." }`.
+
+### Negative case (should not flag)
+
+```diff
+--- a/src/db/query.ts
++++ b/src/db/query.ts
+@@ -10,6 +10,10 @@ export async function findUserById(db: Pool, id: string) {
+   return rows[0] ?? null;
+ }
+
++export async function findUserByEmail(db: Pool, email: string) {
++  const { rows } = await db.query("SELECT * FROM users WHERE email = $1", [email]);
++  return rows[0] ?? null;
++}
+```
+
+**Expected:** `[]`. The `db` parameter name matches the existing convention in `src/db/query.ts`, so flagging it would contradict the "established naming in the module" exclusion.
+
 ## exclusion categories
 
 Do not flag any of the following:

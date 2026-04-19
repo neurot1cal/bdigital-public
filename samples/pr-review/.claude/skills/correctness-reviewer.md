@@ -36,6 +36,50 @@ pointer:
   in the diff by its old signature or type elsewhere, indicating a partial
   refactor.
 
+## Examples
+
+Two reference cases that calibrate the detection rules. The skill should produce the expected output for each without additional clarification.
+
+### Positive case (should flag)
+
+```diff
+--- a/src/users/filters.ts
++++ b/src/users/filters.ts
+@@ -12,6 +12,10 @@ export type User = {
+   lastSeenAt: Date | null;
+ };
+
++/** Return only users whose status is "active". */
++export function filterActiveUsers(users: User[]): User[] {
++  return users.filter((u) => u.status);
++}
++
+ export function sortByLastSeen(users: User[]): User[] {
+   return [...users].sort((a, b) => {
+     const at = a.lastSeenAt?.getTime() ?? 0;
+```
+
+**Expected:** a finding of roughly the shape `{ severity: "medium", file: "src/users/filters.ts", line: 16, rationale: "filterActiveUsers is documented and named to keep only status === 'active', but the predicate u.status is truthy for any non-empty status string, so suspended and pending users also pass." }`.
+
+### Negative case (should not flag)
+
+```diff
+--- a/src/users/filters.ts
++++ b/src/users/filters.ts
+@@ -20,9 +20,9 @@ export function sortByLastSeen(users: User[]): User[] {
+   return [...users].sort((a, b) => {
+-    const at = a.lastSeenAt?.getTime() ?? 0;
+-    const bt = b.lastSeenAt?.getTime() ?? 0;
+-    return bt - at;
++    const aTime = a.lastSeenAt?.getTime() ?? 0;
++    const bTime = b.lastSeenAt?.getTime() ?? 0;
++    return bTime - aTime;
+   });
+ }
+```
+
+**Expected:** `[]`. The rename of local bindings does not change behavior, so there is no intent mismatch to flag.
+
 ## exclusion categories
 
 Do not flag any of the following:

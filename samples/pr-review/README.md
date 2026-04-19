@@ -85,6 +85,42 @@ workflow and checks out fork code with repo secrets present, which is a
 well-documented arbitrary-code-execution risk. Keep the workflow on
 `pull_request` and accept the manual re-run on fork contributions.
 
+## Eval fixtures and the Executor/Grader split
+
+Every skill also ships a JSON eval fixture under `evals/<skill>.json` with
+3–5 labeled cases (positive + negative). The runner at
+`scripts/run-evals.mjs` mirrors Anthropic's skill-creator Executor/Grader
+split:
+
+1. **Executor phase.** Run the skill against each case's diff using the
+   skill as the system prompt. Default model: `claude-sonnet-4-6-20260201`.
+2. **Grader phase.** Send the Executor's findings and the expected findings
+   to a separate model call with a grader-only system prompt. The grader
+   returns `{ passed, reason }`. Default grader model:
+   `claude-haiku-4-5-20251001` (different tier, different prompt, so the
+   grader does not share the reviewer's biases).
+
+Run all evals:
+
+```bash
+node samples/pr-review/scripts/run-evals.mjs \
+  --skills samples/pr-review/.claude/skills \
+  --evals samples/pr-review/evals \
+  --out samples/pr-review/evals/results.json
+```
+
+Use `--only <skill>` to run a single skill's fixture, or
+`--executor-model` / `--grader-model` to override the defaults.
+
+Results are written to `evals/results-<timestamp>.json` (plus the
+`--out` path). Non-zero exit if any case fails.
+
+The two-or-three inline cases inside each skill's `## Examples` section
+are few-shot calibration for inference; they overlap with the first
+couple of fixture cases on purpose so that reading the skill reveals
+what the skill expects to catch. The full labeled corpus belongs in the
+eval fixture, not in the prompt.
+
 ## Customizing
 
 - **Add a skill.** Drop a new `.md` file into `.claude/skills/` following

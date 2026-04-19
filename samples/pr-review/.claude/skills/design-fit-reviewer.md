@@ -37,6 +37,52 @@ Flag each of the following when you see it in the diff:
   already exists elsewhere in the repository. A PR that adds a `formatDate`
   helper next to an existing one of the same name is a classic instance.
 
+## Examples
+
+Two reference cases that calibrate the detection rules. The skill should produce the expected output for each without additional clarification.
+
+### Positive case (should flag)
+
+```diff
+--- a/src/routes/users.ts
++++ b/src/routes/users.ts
+@@ -18,6 +18,14 @@ router.get("/:id", async (req, res) => {
+   res.json(user);
+ });
+
++router.get("/:id/orders", async (req, res) => {
++  const rows = await db.query(
++    "SELECT id, total FROM orders WHERE user_id = $1 ORDER BY created_at DESC",
++    [req.params.id],
++  );
++  res.json(rows);
++});
++
+ router.post("/", async (req, res) => {
+   const user = await userService.create(req.body);
+   res.status(201).json(user);
+```
+
+**Expected:** a finding of roughly the shape `{ severity: "medium", file: "src/routes/users.ts", line: 21, rationale: "A raw SQL string is embedded in an HTTP handler; the sibling routes in this file delegate to userService, so an equivalent orderService or repository method is the expected home for this query." }`.
+
+### Negative case (should not flag)
+
+```diff
+--- a/src/routes/users.ts
++++ b/src/routes/users.ts
+@@ -30,3 +30,8 @@ router.post("/", async (req, res) => {
+   const user = await userService.create(req.body);
+   res.status(201).json(user);
+ });
++
++router.delete("/:id", async (req, res) => {
++  await userService.deleteById(req.params.id);
++  res.status(204).end();
++});
+```
+
+**Expected:** `[]`. The new handler delegates to the existing service layer and matches the shape of neighboring handlers in the same file.
+
 ## exclusion categories
 
 Do not flag any of the following:
