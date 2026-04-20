@@ -43,3 +43,6 @@ coverage/
 # Temp
 tmp/
 temp/
+
+# Local skill-creator eval workspaces (per-run artifacts, not source)
+*-workspace/
