@@ -46,3 +46,29 @@ jobs:
             done
           done
           exit $failed
+
+  session-handoff:
+    name: session-handoff skill integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # The session-handoff skill ships in two places that MUST stay byte-
+      # identical: the readable sample at `samples/session-handoff/` and the
+      # installable plugin at `plugins/session-handoff/`. This job prevents
+      # silent drift — a typo fix in one location that doesn't make it to the
+      # other.
+      - name: Verify samples/ and plugins/ SKILL.md are identical
+        run: |
+          diff -q \
+            samples/session-handoff/SKILL.md \
+            plugins/session-handoff/skills/session-handoff/SKILL.md
+      - name: Run the structural regression suite against the plugin copy
+        run: |
+          # The test script resolves SKILL.md relative to its own location.
+          # Point it at a tmp tree that symlinks the plugin's SKILL.md so the
+          # suite covers both copies (samples/ already passes by virtue of the
+          # diff-q step above).
+          tmp=$(mktemp -d)
+          cp -r samples/session-handoff/tests "$tmp/"
+          ln -s "$GITHUB_WORKSPACE/plugins/session-handoff/skills/session-handoff/SKILL.md" "$tmp/SKILL.md"
+          bash "$tmp/tests/test-skill-structure.sh"

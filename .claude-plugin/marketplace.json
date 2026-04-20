@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "bdigital-public",
+  "version": "0.1.0",
+  "description": "Claude Code plugins distributed alongside the bdigital media engineering blog. Self-contained, MIT-licensed, and tied to a specific published walkthrough.",
+  "owner": {
+    "name": "bdigital media",
+    "url": "https://tech.bdigitalmedia.io"
+  },
+  "plugins": [
+    {
+      "name": "session-handoff",
+      "description": "User-invocable skill that generates a distilled brief so a fresh Claude Code session can resume where the previous one left off. Implements the 'Clear with a brief' pattern from Anthropic's session management guide.",
+      "category": "productivity",
+      "source": "./plugins/session-handoff",
+      "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/session-handoff"
+    }
+  ]
+}

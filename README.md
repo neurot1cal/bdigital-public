@@ -8,15 +8,47 @@ minimum shape needed to be useful without shipping proprietary context.
 
 ```
 bdigital-public/
-├── samples/
-│   └── pr-review/          # Claude-skills-based automated PR review
-│                           # Matches the 3-part blog series on tech.bdigitalmedia.io
+├── .claude-plugin/
+│   └── marketplace.json    # Makes this repo a Claude Code plugin marketplace
+├── plugins/                # Installable plugins (one-command install via /plugin)
+│   └── session-handoff/    # Brief-generating skill for /clear-then-resume workflow
+├── samples/                # Read-the-source versions (copy into your own repo)
+│   ├── pr-review/          # Claude-skills-based automated PR review
+│   └── session-handoff/    # Same skill as plugins/session-handoff, with tests
 ├── site/                   # Astro landing page (Cloudflare Workers)
 └── .github/                # Open-source workflows, templates, ownership
 ```
 
-Each directory under `samples/` is self-contained. Copy it into your own repo
-or use it as a reference while reading the associated blog post.
+`samples/` is for readers who want to study or copy code; `plugins/` is for
+readers who want to install and use. Both coexist so you can pick whichever
+matches your intent — and blog posts can link to either.
+
+## Install a plugin
+
+This repo is itself a Claude Code plugin marketplace. Inside Claude Code:
+
+```
+/plugin marketplace add neurot1cal/bdigital-public
+/plugin install session-handoff@bdigital-public
+```
+
+If your Claude Code build rejects the shorthand, use the full Git URL
+(`https://github.com/neurot1cal/bdigital-public.git`) or a local-path pointing
+at a checkout of this repo. See
+[`plugins/session-handoff/README.md`](plugins/session-handoff/README.md) for
+the full install matrix, how to uninstall, and what tools the plugin grants.
+
+## Current plugins
+
+### `plugins/session-handoff/`
+
+A user-invocable Claude Code skill that generates a distilled brief for a fresh
+session to resume from. Implements the "Clear with a brief" pattern from
+Anthropic's session management guide.
+
+Install: `/plugin install session-handoff@bdigital-public` (after adding the
+marketplace as shown above). Source lives at
+[`plugins/session-handoff/skills/session-handoff/SKILL.md`](plugins/session-handoff/skills/session-handoff/SKILL.md).
 
 ## Current samples
 

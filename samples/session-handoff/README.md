@@ -1,5 +1,11 @@
 # session-handoff sample
 
+> **Looking for one-command install?** The same skill ships as a Claude Code plugin at
+> [`plugins/session-handoff/`](../../plugins/session-handoff/). Run
+> `/plugin marketplace add neurot1cal/bdigital-public` and then
+> `/plugin install session-handoff@bdigital-public`. This `samples/` directory is the
+> read-the-source view for readers who want to study the skill without installing.
+
 A user-invocable Claude Code skill that generates a self-contained prompt
 letting a fresh Claude Code session resume where a previous one left off.
 

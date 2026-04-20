@@ -44,6 +44,7 @@ Action blocks the merge until the title matches. Allowed types:
 | `chore:`    | Tooling, non-functional maintenance                  |
 | `docs:`     | Documentation-only                                   |
 | `sample:`   | Change to anything under `samples/`                  |
+| `plugin:`   | Change to an installable plugin under `plugins/` or to `.claude-plugin/marketplace.json` |
 | `skill:`    | Change to a review skill under `.claude/skills/`     |
 | `site:`     | Change to the Astro landing page under `site/`       |
 | `ci:`       | GitHub Actions workflow or CI-adjacent config        |
@@ -105,6 +106,60 @@ exclusion categories.
 
 Keep skills short. Any skill longer than about 200 lines usually has two
 responsibilities and should split.
+
+## Plugin-authoring guide (for `plugins/`)
+
+The repo is a Claude Code plugin marketplace. Each directory under `plugins/`
+is one installable plugin, discovered via the top-level
+`.claude-plugin/marketplace.json` manifest. Add a new plugin only when it has
+a companion blog post or a clearly articulated standalone use case — plugins
+are a publication contract, not a staging area for experiments.
+
+1. **Layout.** Match the existing shape:
+   ```
+   plugins/<plugin-name>/
+   ├── .claude-plugin/plugin.json     # name, version, description, author, license
+   ├── README.md                      # install command + what the plugin does
+   ├── LICENSE                        # copy of the MIT license — must be distributable with the plugin
+   └── skills/<skill-name>/SKILL.md   # the skill(s) the plugin ships
+   ```
+   The `name` in `plugin.json` must match the `name` in the marketplace
+   entry. Different marketplaces can ship plugins with the same name, so
+   user-facing install and uninstall commands should always be qualified
+   (`session-handoff@bdigital-public`).
+
+2. **Marketplace entry.** Add a block to `.claude-plugin/marketplace.json`
+   with `name`, `description`, `category`, `source: "./plugins/<name>"`,
+   and `homepage`. The bare-string `source` form works for plugins vendored
+   in this repo; external plugins would use the object form with `url` and
+   `sha`.
+
+3. **Duplication policy.** If a plugin also ships as a readable sample under
+   `samples/`, the `SKILL.md` files at the two paths must stay byte-identical.
+   The `session-handoff` CI job enforces this via `diff -q`. Either keep the
+   sample as the canonical copy and vendor it into the plugin, or vice
+   versa — just don't let them drift.
+
+4. **`allowed-tools`.** Scope tightly. User-invocable skills granted broad
+   `Bash` + `Write` access run with those tools any time the skill fires.
+   Prefer the narrowest set the procedure actually uses and note it in the
+   plugin README so installers can make an informed decision.
+
+5. **User data paths.** Skills that persist state between sessions should
+   write under `~/.claude/data/<plugin-name>/` rather than
+   `~/.claude/skills/<name>/` or `~/.claude/plugins/…`. The first is a
+   stable user-data directory; the second and third are managed by the
+   Claude Code installer and can be overwritten on reinstall.
+
+6. **Verification.** Before opening the PR, confirm:
+   - `python3 -m json.tool` passes on both `.claude-plugin/marketplace.json`
+     and `plugins/<name>/.claude-plugin/plugin.json`.
+   - The plugin's structural test suite (if it has one) passes.
+   - `/plugin marketplace add /path/to/your/fork` and `/plugin install
+     <name>@bdigital-public` work end-to-end from a clean Claude Code
+     session.
+   - CI drift checks pass (the `session-handoff` job is a template for
+     other plugins that ship alongside a `samples/` copy).
 
 ## Licensing
 

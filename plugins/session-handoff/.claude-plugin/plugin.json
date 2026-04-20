@@ -1,0 +1,12 @@
+{
+  "name": "session-handoff",
+  "description": "User-invocable skill that generates a distilled brief so a fresh Claude Code session can resume where the previous one left off. Implements the 'Clear with a brief' pattern from Anthropic's session management guide.",
+  "version": "0.1.0",
+  "category": "productivity",
+  "author": {
+    "name": "bdigital media",
+    "url": "https://tech.bdigitalmedia.io"
+  },
+  "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/session-handoff",
+  "license": "MIT"
+}

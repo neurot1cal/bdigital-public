@@ -37,6 +37,7 @@ jobs:
             build
             chore
             docs
+            plugin
             sample
             skill
             site
