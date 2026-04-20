@@ -130,9 +130,31 @@ are a publication contract, not a staging area for experiments.
 
 2. **Marketplace entry.** Add a block to `.claude-plugin/marketplace.json`
    with `name`, `description`, `category`, `source: "./plugins/<name>"`,
-   and `homepage`. The bare-string `source` form works for plugins vendored
-   in this repo; external plugins would use the object form with `url` and
-   `sha`.
+   and `homepage`. The bare-string `source` form is only acceptable for
+   plugins vendored in this repo — the source gets resolved relative to a
+   git-tracked marketplace checkout, so mutation is gated by a PR here.
+
+   **External plugins MUST pin a SHA.** Any marketplace entry whose
+   `source` is an external git URL must use the object form with both
+   `url` and `sha`:
+
+   ```json
+   {
+     "name": "example-plugin",
+     "source": {
+       "source": "url",
+       "url": "https://github.com/someone/example-plugin.git",
+       "sha": "a1b2c3d4e5f6..."
+     }
+   }
+   ```
+
+   Without the `sha`, a subsequent push to the external repo silently
+   changes what every installed user pulls on `/plugin marketplace
+   update` — a standard supply-chain attack vector. Bumping the SHA for a
+   new upstream release is a normal PR to this repo and goes through the
+   same review as any other change. A CI check (to be added) will reject
+   external-URL entries missing a `sha`.
 
 3. **Duplication policy.** If a plugin also ships as a readable sample under
    `samples/`, the `SKILL.md` files at the two paths must stay byte-identical.
