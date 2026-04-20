@@ -11,8 +11,12 @@ PASS=0
 FAIL=0
 ERRORS=()
 
-pass() { ((PASS++)); printf "  \033[32m✓\033[0m %s\n" "$1"; }
-fail() { ((FAIL++)); ERRORS+=("$1"); printf "  \033[31m✗\033[0m %s\n" "$1"; }
+# `((VAR++))` returns exit code 1 when VAR is 0 (post-increment evaluates to
+# the pre-increment value, and arithmetic expressions that evaluate to 0 map
+# to exit 1), which trips `set -e`. Use explicit assignment instead so the
+# script behaves the same under strict mode across bash versions.
+pass() { PASS=$((PASS+1)); printf "  \033[32m✓\033[0m %s\n" "$1"; }
+fail() { FAIL=$((FAIL+1)); ERRORS+=("$1"); printf "  \033[31m✗\033[0m %s\n" "$1"; }
 check() {
   local desc="$1" pattern="$2"
   if grep -qE "$pattern" "$SKILL_FILE"; then
