@@ -105,6 +105,72 @@ TodoWrite`. Concretely, when `/session-handoff` fires:
 If that tool surface is broader than you want, fork the plugin, narrow the
 `allowed-tools` frontmatter, and install from your fork.
 
+## Trust model
+
+`/plugin install` is equivalent in spirit to `curl | bash`: you load
+executable instructions (SKILL.md) and tool grants (allowed-tools) from a
+git repo you didn't author. Here's what you're opting into when you
+install this plugin specifically, and what's worth checking before you
+install any plugin.
+
+### What this plugin does
+
+- Reads git metadata (`git branch`, `git log`, `git status`, `git remote`)
+  — all read-only, all local.
+- Reads project memory files under `~/.claude/projects/<project>/memory/`
+  if they exist.
+- Writes one handoff-log markdown file per invocation to
+  `~/.claude/data/session-handoff/logs/`.
+- Optionally edits existing memory files when Step 3 of the procedure
+  decides something is worth persisting long-term.
+- Emits a markdown brief to the conversation.
+
+### What this plugin doesn't do
+
+- No network requests. `SKILL.md` never instructs Claude to fetch or
+  POST.
+- No destructive shell commands. The only `git` invocations are
+  read-only snapshots; there are no `git push`, `rm`, or file-destructive
+  operations in the procedure.
+- No writes outside the single log directory and (optionally) existing
+  memory files it was already instructed to update.
+- No credentials, tokens, or secrets are read, transmitted, or logged.
+  The skill explicitly refuses to include secrets in the brief (see the
+  "What NOT to Include" section of `SKILL.md`).
+
+### Verifying you're installing the real thing
+
+1. Run `/plugin marketplace add neurot1cal/bdigital-public` — note the
+   **`neurot1cal`** owner. Any other owner is a typosquat.
+2. After install, the skill appears in the available-skills list as
+   `session-handoff:session-handoff`. The namespace before the colon is
+   the plugin name; if you see a different namespace, a different
+   marketplace's plugin is loaded.
+3. Read the committed SKILL.md at
+   [`plugins/session-handoff/skills/session-handoff/SKILL.md`](skills/session-handoff/SKILL.md)
+   before installing. It's plain markdown, ~160 lines. If anything
+   instructs Claude to fetch URLs, exfiltrate files, or run shell
+   commands beyond the read-only git operations listed above, do not
+   install.
+
+### Staying safe installing any Claude Code plugin
+
+- **Read the SKILL.md.** `/plugin install` doesn't prompt you to review
+  first. A 60-second read of the source catches the obvious attacks.
+- **Prefer pinned marketplaces.** External plugins in a trustworthy
+  marketplace should be SHA-pinned in `marketplace.json` so pushes to the
+  upstream repo don't silently change what runs on your machine. See
+  [CONTRIBUTING.md](../../CONTRIBUTING.md) for the shape this repo
+  requires.
+- **Don't click through permission prompts.** When Claude Code asks to
+  run a tool a newly-installed skill requires, pause. A plugin that
+  needs `WebFetch` on first invocation has earned a question.
+- **Scope narrowly.** A plugin declaring `Bash, Write, WebFetch`
+  simultaneously with no explanation in the README is a smell.
+- **Prefer project-scoped installs for untrusted plugins.** Adding a
+  marketplace to a specific project's `.claude-plugin/` limits blast
+  radius vs. a user-global install.
+
 ## License
 
 MIT. See the [`LICENSE`](LICENSE) in this directory (distributed with the
