@@ -14,6 +14,13 @@
       "category": "productivity",
       "source": "./plugins/session-handoff",
       "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/session-handoff"
+    },
+    {
+      "name": "cc-context-monitor",
+      "description": "User-invocable skill that configures a color-coded Claude Code statusline showing current context window usage, rolling session token usage, and 7-day weekly usage by wrapping ccusage with threshold-based color cues.",
+      "category": "productivity",
+      "source": "./plugins/cc-context-monitor",
+      "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/cc-context-monitor"
     }
   ]
 }
