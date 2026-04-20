@@ -1,0 +1,173 @@
+{
+  "skill": "cc-context-monitor",
+  "description": "Behavioral eval cases for the cc-context-monitor statusline wrapper. Each case pipes a JSON blob on stdin and asserts the wrapper output contains the expected color-band prefix, the expected context percent, and the expected fallback text when ccusage is missing.",
+  "cases": [
+    {
+      "name": "zero-percent-green",
+      "type": "positive",
+      "description": "Fresh session, 0% context used. Expect the green color code and 'ctx 0%' in the output, plus the passthrough ccusage segment.",
+      "stub_ccusage_output": "Opus | $0.00 session / $0.00 today / $0.00 block | 0 (0%)",
+      "stub_ccusage_exit": 0,
+      "stdin_json": {
+        "session_id": "eval-0pct",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+      },
+      "expect_contains": [
+        "ctx 0%",
+        "(green)",
+        "\u001b[32m",
+        "Opus",
+        "(0%)"
+      ],
+      "expect_not_contains": [
+        "(yellow)",
+        "(red)",
+        "ccusage not installed"
+      ],
+      "expect_exit_code": 0
+    },
+    {
+      "name": "fifty-five-percent-green",
+      "type": "positive",
+      "description": "Middle of green band (55%). Expect green color code and 'ctx 55%'.",
+      "stub_ccusage_output": "Opus | $1.23 session / $14.80 today / $72.10 block | 550,000 (55%)",
+      "stub_ccusage_exit": 0,
+      "stdin_json": {
+        "session_id": "eval-55pct",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+      },
+      "expect_contains": [
+        "ctx 55%",
+        "(green)",
+        "\u001b[32m",
+        "(55%)"
+      ],
+      "expect_not_contains": [
+        "(yellow)",
+        "(red)"
+      ],
+      "expect_exit_code": 0
+    },
+    {
+      "name": "seventy-five-percent-yellow",
+      "type": "positive",
+      "description": "Inside yellow band (75%). Expect yellow color code and 'ctx 75%'.",
+      "stub_ccusage_output": "Opus | $2.00 session / $20.00 today / $90.00 block | 750,000 (75%)",
+      "stub_ccusage_exit": 0,
+      "stdin_json": {
+        "session_id": "eval-75pct",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+      },
+      "expect_contains": [
+        "ctx 75%",
+        "(yellow)",
+        "\u001b[33m",
+        "(75%)"
+      ],
+      "expect_not_contains": [
+        "(green)",
+        "(red)"
+      ],
+      "expect_exit_code": 0
+    },
+    {
+      "name": "ninety-two-percent-red",
+      "type": "positive",
+      "description": "Deep red band (92%). Expect red color code and 'ctx 92%'.",
+      "stub_ccusage_output": "Opus | $3.00 session / $50.00 today / $120.00 block | 920,000 (92%)",
+      "stub_ccusage_exit": 0,
+      "stdin_json": {
+        "session_id": "eval-92pct",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+      },
+      "expect_contains": [
+        "ctx 92%",
+        "(red)",
+        "\u001b[31m",
+        "(92%)"
+      ],
+      "expect_not_contains": [
+        "(green)",
+        "(yellow)"
+      ],
+      "expect_exit_code": 0
+    },
+    {
+      "name": "ccusage-missing-fallback",
+      "type": "negative",
+      "description": "ccusage not on PATH and npx --no-install cannot find it. Expect the graceful fallback message mentioning ccusage is not installed.",
+      "stub_ccusage_exit": null,
+      "disable_ccusage": true,
+      "stdin_json": {
+        "session_id": "eval-missing",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+      },
+      "expect_contains": [
+        "ccusage not installed",
+        "/cc-context-monitor"
+      ],
+      "expect_not_contains": [
+        "(green)",
+        "(yellow)",
+        "(red)"
+      ],
+      "expect_exit_code": 0
+    },
+    {
+      "name": "malformed-stdin-safe",
+      "type": "negative",
+      "description": "Non-JSON stdin. Expect a quiet fallback line, not a crash or non-zero exit.",
+      "stub_ccusage_exit": null,
+      "raw_stdin": "this is not json",
+      "expect_contains": [
+        "cc-context-monitor"
+      ],
+      "expect_not_contains": [
+        "(green)",
+        "(yellow)",
+        "(red)"
+      ],
+      "expect_exit_code": 0
+    },
+    {
+      "name": "annotation-preserved",
+      "type": "positive",
+      "description": "CC_STATUSLINE_ANNOTATION is set in the environment. Expect the annotation to appear appended after the main segment, not replacing it.",
+      "stub_ccusage_output": "Opus | $0.50 session / $5.00 today / $30.00 block | 100,000 (10%)",
+      "stub_ccusage_exit": 0,
+      "env": { "CC_STATUSLINE_ANNOTATION": "Remote control active" },
+      "stdin_json": {
+        "session_id": "eval-annotation",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+      },
+      "expect_contains": [
+        "ctx 10%",
+        "(green)",
+        "Remote control active"
+      ],
+      "expect_not_contains": [
+        "(yellow)",
+        "(red)"
+      ],
+      "expect_exit_code": 0
+    }
+  ]
+}

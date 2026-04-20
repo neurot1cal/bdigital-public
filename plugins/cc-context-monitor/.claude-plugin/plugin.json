@@ -1,0 +1,12 @@
+{
+  "name": "cc-context-monitor",
+  "description": "User-invocable skill that configures a color-coded Claude Code statusline. Shows current context window usage, rolling session token usage, and 7-day weekly usage by wrapping ccusage with threshold-based color cues and preserving any existing right-side annotation.",
+  "version": "0.1.0",
+  "category": "productivity",
+  "author": {
+    "name": "bdigital media",
+    "url": "https://tech.bdigitalmedia.io"
+  },
+  "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/cc-context-monitor",
+  "license": "MIT"
+}
