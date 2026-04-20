@@ -1,6 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "bdigital-public",
+  "version": "0.1.0",
   "description": "Claude Code plugins distributed alongside the bdigital media engineering blog. Self-contained, MIT-licensed, and tied to a specific published walkthrough.",
   "owner": {
     "name": "bdigital media",

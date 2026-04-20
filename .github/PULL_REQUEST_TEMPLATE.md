@@ -9,6 +9,7 @@
 ## Type of change
 
 - [ ] New sample
+- [ ] New plugin
 - [ ] New review skill
 - [ ] Bug fix
 - [ ] Documentation
@@ -21,7 +22,8 @@
 - [ ] No secrets, API keys, or personal data are present in the diff.
 - [ ] If `site/` changed, `npm run build` succeeds locally.
 - [ ] If a skill changed, the frontmatter-plus-seven-named-sections shape from `CONTRIBUTING.md` is preserved and its `evals/<skill>.json` fixture passes via `run-evals.mjs`.
-- [ ] The PR title uses conventional-commit format: `feat:`, `fix:`, `build:`, `chore:`, `docs:`, `sample:`, `skill:`, `site:`, `ci:`, `refactor:`, or `test:`. The `pr-hygiene` check enforces this.
+- [ ] If a plugin under `plugins/` changed, `.claude-plugin/plugin.json` is valid JSON and the marketplace entry in `.claude-plugin/marketplace.json` matches its `name`; `LICENSE` is reachable from the plugin directory.
+- [ ] The PR title uses conventional-commit format: `feat:`, `fix:`, `build:`, `chore:`, `docs:`, `plugin:`, `sample:`, `skill:`, `site:`, `ci:`, `refactor:`, or `test:`. The `pr-hygiene` check enforces this.
 
 ## Related reading
 

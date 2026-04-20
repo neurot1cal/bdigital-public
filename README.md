@@ -23,7 +23,7 @@ bdigital-public/
 readers who want to install and use. Both coexist so you can pick whichever
 matches your intent — and blog posts can link to either.
 
-## Install a plugin (one command)
+## Install a plugin
 
 This repo is itself a Claude Code plugin marketplace. Inside Claude Code:
 
@@ -32,9 +32,11 @@ This repo is itself a Claude Code plugin marketplace. Inside Claude Code:
 /plugin install session-handoff@bdigital-public
 ```
 
-That registers the marketplace and installs the `session-handoff` skill. See
-[`plugins/session-handoff/README.md`](plugins/session-handoff/README.md) for what
-the plugin does and how to customize it.
+If your Claude Code build rejects the shorthand, use the full Git URL
+(`https://github.com/neurot1cal/bdigital-public.git`) or a local-path pointing
+at a checkout of this repo. See
+[`plugins/session-handoff/README.md`](plugins/session-handoff/README.md) for
+the full install matrix, how to uninstall, and what tools the plugin grants.
 
 ## Current plugins
 
