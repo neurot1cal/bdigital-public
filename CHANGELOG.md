@@ -17,6 +17,34 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   Grader split from Anthropic's skill-creator toolkit. Executor defaults
   to Sonnet 4.6, Grader defaults to Haiku 4.5 so the two roles run on
   different model tiers by default.
+- `samples/session-handoff/` — first user-invocable Claude Code skill
+  in this repo. Generates a brief for resuming work in a fresh session
+  after `/clear`. Ships with `SKILL.md`, `README.md`, three scenario
+  fixtures under `tests/scenarios/`, an `evals/evals.json` behavioral
+  eval fixture, and a 36-assertion structural test runner at
+  `tests/test-skill-structure.sh` (frontmatter shape, required sections,
+  guardrail phrases, anti-patterns, prompt template, 500–1500 word
+  budget). PR #10.
+- `.claude-plugin/marketplace.json` at the repo root, turning the
+  repository into a Claude Code plugin marketplace. PR #11.
+- `plugins/session-handoff/` — installable-plugin packaging of the
+  session-handoff skill. Adds `.claude-plugin/plugin.json`, install
+  README, and a `skills/session-handoff/SKILL.md` kept byte-identical
+  to the `samples/` copy (verified by the existing 36-assertion
+  structural test against the plugin path). Install via:
+  `/plugin marketplace add neurot1cal/bdigital-public` then
+  `/plugin install session-handoff@bdigital-public`. PR #11.
+- **Trust model** section in `plugins/session-handoff/README.md`
+  documenting what the plugin reads, writes, and does not do, plus a
+  pre-install verification checklist and general safety guidance for
+  any Claude Code plugin install. PR #12.
+
+### Changed
+
+- `CONTRIBUTING.md` now requires SHA-pinning for marketplace entries
+  whose `source` is an external git URL. Bare-string `./plugins/...`
+  is still acceptable for plugins vendored in this repo (mutation is
+  gated by PR review). A future CI check will enforce this. PR #12.
 
 ## [0.1.0] - 2026-04-18
 
