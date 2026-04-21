@@ -1,6 +1,6 @@
 ---
 name: cc-context-monitor
-description: Use when user asks about context usage, statusline setup, token usage, weekly quota, or says "configure statusline", "context monitor", or "show my weekly usage". Triggers on mentions of session token counts, 1M-context percent, rolling 5-hour session limits, or rolling 7-day quota.
+description: Use this skill whenever the user wants to configure, install, fix, wire up, customize, or revert their Claude Code statusline — or when they mention context-window fill, token usage, subscription quota, 5-hour session limits, 7-day weekly quota, ccusage, or any "how much Claude do I have left" visibility concern. Trigger on symptom descriptions too — "my statusline went blank", "the bottom bar doesn't show anything useful", "I keep hitting the weekly cap", "I want context % in my terminal", "show my weekly usage" — and even when the user doesn't name the skill by name. The installer writes one line to ~/.claude/settings.json that wires a color-banded three-bar statusline (context / 5-hour / 7-day, green under 50% / yellow under 75% / red at 75%+) into every Claude Code turn.
 user-invocable: true
 allowed-tools: Bash, Read, Write, Edit
 ---

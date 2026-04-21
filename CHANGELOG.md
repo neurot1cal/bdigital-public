@@ -5,6 +5,20 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **cc-context-monitor 0.2.0 → 0.2.1**: stdin rate-limit percentages
+  can arrive as floats (Claude Code has been observed emitting
+  `55.00000000000001` for `.rate_limits.seven_day.used_percentage`).
+  v0.2.0's bash integer math rejected those with
+  `integer expression expected` / `syntax error`, aborting the render
+  and blanking the statusline. Introduced a `to_int` helper that
+  rounds each percent via awk before any `[ -le ]` comparison or
+  `$(( ))` arithmetic, applied at the ingestion points for
+  `.context_window.*used_percentage` and both `.rate_limits.*.used_percentage`
+  fields. Added a `float-percent-ingestion` eval case so the
+  regression can't creep back in.
+
 ### Changed
 
 - **cc-context-monitor 0.1.0 → 0.2.0**: rewrote `statusline.sh` to read

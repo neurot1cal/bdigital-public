@@ -156,6 +156,37 @@
       "expect_exit_code": 0
     },
     {
+      "name": "float-percent-ingestion",
+      "type": "positive",
+      "description": "CC sometimes emits rate-limit percentages as floats (e.g. 55.00000000000001 from floating-point division). The wrapper must coerce to an integer before integer arithmetic and band comparisons, otherwise bash errors out and the statusline goes blank. Regression guard for a v0.2.0 bug.",
+      "stub_ccusage_output": "",
+      "stub_ccusage_exit": 0,
+      "stdin_json": {
+        "session_id": "eval-float",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7[1m]", "display_name": "Opus 4.7 (1M context)" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" },
+        "context_window": { "used_percentage": 29.5, "remaining_percentage": 70.5 },
+        "rate_limits": {
+          "five_hour": { "used_percentage": 24.9999999 },
+          "seven_day": { "used_percentage": 55.00000000000001 }
+        },
+        "output_style": { "name": "default" }
+      },
+      "expect_contains": [
+        "30% ctx",
+        "25% 5h",
+        "55% 7d",
+        "Opus 4.7 (1M context)"
+      ],
+      "expect_not_contains": [
+        "integer expression expected",
+        "syntax error"
+      ],
+      "expect_exit_code": 0
+    },
+    {
       "name": "annotation-preserved",
       "type": "positive",
       "description": "CC_STATUSLINE_ANNOTATION is set in the environment. Expect the annotation to appear appended after the main segments, not replacing them.",
