@@ -1,7 +1,7 @@
 {
   "name": "cc-context-monitor",
   "description": "User-invocable skill that configures an info-dense Claude Code statusline. Shows cwd, git branch (with dirty flag), model label, and three color-banded 10-dot progress bars: context window fill, 5-hour session rate-limit burn, and 7-day weekly quota burn — all read from Claude Code's native stdin payload, no external tools required on v2.1.x+.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "category": "productivity",
   "author": {
     "name": "bdigital media",

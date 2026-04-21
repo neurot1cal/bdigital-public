@@ -94,6 +94,18 @@ jq_field() {
   fi
 }
 
+# Coerce a possibly-float numeric string to a rounded non-negative
+# integer. CC has been observed to emit values like 55.00000000000001
+# for rate-limit percentages; bash arithmetic and `[ -le ]` both reject
+# floats, so every percent read from stdin passes through this before
+# any integer math touches it. Empty input → empty output so callers
+# can keep using `-n` checks to tell "missing" from "zero".
+to_int() {
+  local v="$1"
+  [ -z "$v" ] && return 0
+  awk -v x="$v" 'BEGIN { v = x + 0.5; if (v < 0) v = 0; printf "%d", v }'
+}
+
 # --- Pull top-level signals from the stdin blob ----------------------------
 CWD=$(jq_field '.cwd // .workspace.current_dir' "")
 MODEL_ID=$(jq_field '.model.id' "")
@@ -106,13 +118,13 @@ OUTPUT_STYLE=$(jq_field '.output_style.name' "default")
 # Different builds may use a .percent_used spelling. Check both shapes.
 CTX_REMAINING=$(jq_field '.context_window.remaining_percentage' "")
 CTX_USED_DIRECT=$(jq_field '.context_window.percent_used // .context_window.used_percentage' "")
-RATE_5H=$(jq_field '.rate_limits.five_hour.used_percentage' "")
-RATE_7D=$(jq_field '.rate_limits.seven_day.used_percentage' "")
+RATE_5H=$(to_int "$(jq_field '.rate_limits.five_hour.used_percentage' "")")
+RATE_7D=$(to_int "$(jq_field '.rate_limits.seven_day.used_percentage' "")")
 
 # --- Compute the context-used percent --------------------------------------
 CTX_PCT=""
 if [ -n "$CTX_USED_DIRECT" ]; then
-  CTX_PCT=$(printf '%s' "$CTX_USED_DIRECT" | awk '{printf "%d", ($1 + 0.5)}')
+  CTX_PCT=$(to_int "$CTX_USED_DIRECT")
 elif [ -n "$CTX_REMAINING" ]; then
   # remaining_percentage is "how much is LEFT". Used = 100 - remaining.
   CTX_PCT=$(awk -v r="$CTX_REMAINING" 'BEGIN { printf "%d", (100 - r + 0.5) }')
