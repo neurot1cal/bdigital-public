@@ -1,130 +1,143 @@
 {
   "skill": "cc-context-monitor",
-  "description": "Behavioral eval cases for the cc-context-monitor statusline wrapper. Each case pipes a JSON blob on stdin and asserts the wrapper output contains the expected color-band prefix, the expected context percent, and the expected fallback text when ccusage is missing.",
+  "description": "Behavioral eval cases for the cc-context-monitor statusline wrapper. Each case pipes a JSON blob on stdin and asserts the wrapper output contains the expected ctx/5h/7d dot-bar segments, the expected color band, and the expected fallback text when fields or ccusage are missing.",
   "cases": [
     {
-      "name": "zero-percent-green",
+      "name": "zero-percent-all-green",
       "type": "positive",
-      "description": "Fresh session, 0% context used. Expect the green color code and 'ctx 0%' in the output, plus the passthrough ccusage segment.",
-      "stub_ccusage_output": "Opus | $0.00 session / $0.00 today / $0.00 block | 0 (0%)",
+      "description": "Fresh session: 0% across ctx, 5h, 7d. Every bar is fully empty and color is green.",
+      "stub_ccusage_output": "",
       "stub_ccusage_exit": 0,
       "stdin_json": {
         "session_id": "eval-0pct",
         "transcript_path": "EVAL_TRANSCRIPT",
         "cwd": "/tmp",
-        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
-        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+        "model": { "id": "claude-opus-4-7[1m]", "display_name": "Opus 4.7 (1M context)" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" },
+        "context_window": { "used_percentage": 0, "remaining_percentage": 100 },
+        "rate_limits": {
+          "five_hour": { "used_percentage": 0 },
+          "seven_day": { "used_percentage": 0 }
+        },
+        "output_style": { "name": "default" }
       },
       "expect_contains": [
-        "ctx 0%",
-        "(green)",
+        "0% ctx",
+        "0% 5h",
+        "0% 7d",
         "\u001b[32m",
-        "Opus",
-        "(0%)"
+        "Opus 4.7 (1M context)",
+        "○○○○○○○○○○"
       ],
       "expect_not_contains": [
-        "(yellow)",
-        "(red)",
+        "\u001b[33m",
+        "\u001b[31m",
         "ccusage not installed"
       ],
       "expect_exit_code": 0
     },
     {
-      "name": "fifty-five-percent-green",
+      "name": "mid-green-band",
       "type": "positive",
-      "description": "Middle of green band (55%). Expect green color code and 'ctx 55%'.",
-      "stub_ccusage_output": "Opus | $1.23 session / $14.80 today / $72.10 block | 550,000 (55%)",
+      "description": "All three percentages sit in the green band (<50%). Expect green color codes only and half-fill dot bars.",
+      "stub_ccusage_output": "",
       "stub_ccusage_exit": 0,
       "stdin_json": {
-        "session_id": "eval-55pct",
+        "session_id": "eval-45pct",
         "transcript_path": "EVAL_TRANSCRIPT",
         "cwd": "/tmp",
-        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
-        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+        "model": { "id": "claude-opus-4-7[1m]", "display_name": "Opus 4.7 (1M context)" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" },
+        "context_window": { "used_percentage": 45, "remaining_percentage": 55 },
+        "rate_limits": {
+          "five_hour": { "used_percentage": 30 },
+          "seven_day": { "used_percentage": 40 }
+        },
+        "output_style": { "name": "default" }
       },
       "expect_contains": [
-        "ctx 55%",
-        "(green)",
-        "\u001b[32m",
-        "(55%)"
+        "45% ctx",
+        "30% 5h",
+        "40% 7d",
+        "\u001b[32m"
       ],
       "expect_not_contains": [
-        "(yellow)",
-        "(red)"
-      ],
-      "expect_exit_code": 0
-    },
-    {
-      "name": "seventy-five-percent-yellow",
-      "type": "positive",
-      "description": "Inside yellow band (75%). Expect yellow color code and 'ctx 75%'.",
-      "stub_ccusage_output": "Opus | $2.00 session / $20.00 today / $90.00 block | 750,000 (75%)",
-      "stub_ccusage_exit": 0,
-      "stdin_json": {
-        "session_id": "eval-75pct",
-        "transcript_path": "EVAL_TRANSCRIPT",
-        "cwd": "/tmp",
-        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
-        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
-      },
-      "expect_contains": [
-        "ctx 75%",
-        "(yellow)",
         "\u001b[33m",
-        "(75%)"
-      ],
-      "expect_not_contains": [
-        "(green)",
-        "(red)"
+        "\u001b[31m"
       ],
       "expect_exit_code": 0
     },
     {
-      "name": "ninety-two-percent-red",
+      "name": "yellow-band-ctx",
       "type": "positive",
-      "description": "Deep red band (92%). Expect red color code and 'ctx 92%'.",
-      "stub_ccusage_output": "Opus | $3.00 session / $50.00 today / $120.00 block | 920,000 (92%)",
+      "description": "Context is in yellow band (50–74%). Expect yellow color code alongside ctx segment.",
+      "stub_ccusage_output": "",
       "stub_ccusage_exit": 0,
       "stdin_json": {
-        "session_id": "eval-92pct",
+        "session_id": "eval-60pct",
         "transcript_path": "EVAL_TRANSCRIPT",
         "cwd": "/tmp",
-        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
-        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+        "model": { "id": "claude-opus-4-7[1m]", "display_name": "Opus 4.7 (1M context)" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" },
+        "context_window": { "used_percentage": 60, "remaining_percentage": 40 },
+        "rate_limits": {
+          "five_hour": { "used_percentage": 30 },
+          "seven_day": { "used_percentage": 40 }
+        },
+        "output_style": { "name": "default" }
       },
       "expect_contains": [
-        "ctx 92%",
-        "(red)",
-        "\u001b[31m",
-        "(92%)"
-      ],
-      "expect_not_contains": [
-        "(green)",
-        "(yellow)"
+        "60% ctx",
+        "\u001b[33m"
       ],
       "expect_exit_code": 0
     },
     {
-      "name": "ccusage-missing-fallback",
-      "type": "negative",
-      "description": "ccusage not on PATH and npx --no-install cannot find it. Expect the graceful fallback message mentioning ccusage is not installed.",
-      "stub_ccusage_exit": null,
-      "disable_ccusage": true,
+      "name": "red-band-weekly",
+      "type": "positive",
+      "description": "7-day quota is in the red band (>=75%). Expect red color code surrounding the 7d segment.",
+      "stub_ccusage_output": "",
+      "stub_ccusage_exit": 0,
       "stdin_json": {
-        "session_id": "eval-missing",
+        "session_id": "eval-85pct",
         "transcript_path": "EVAL_TRANSCRIPT",
         "cwd": "/tmp",
-        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
+        "model": { "id": "claude-opus-4-7[1m]", "display_name": "Opus 4.7 (1M context)" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" },
+        "context_window": { "used_percentage": 30, "remaining_percentage": 70 },
+        "rate_limits": {
+          "five_hour": { "used_percentage": 40 },
+          "seven_day": { "used_percentage": 85 }
+        },
+        "output_style": { "name": "default" }
+      },
+      "expect_contains": [
+        "30% ctx",
+        "85% 7d",
+        "\u001b[31m"
+      ],
+      "expect_exit_code": 0
+    },
+    {
+      "name": "missing-context-window-ccusage-fallback",
+      "type": "negative",
+      "description": "Older Claude Code version: stdin lacks context_window; wrapper falls back to ccusage statusline regex for ctx percent. Model label still renders from stdin, rate-limit bars are skipped.",
+      "stub_ccusage_output": "Opus | $0.50 session / $5.00 today / $30.00 block | 100,000 (10%)",
+      "stub_ccusage_exit": 0,
+      "stdin_json": {
+        "session_id": "eval-legacy",
+        "transcript_path": "EVAL_TRANSCRIPT",
+        "cwd": "/tmp",
+        "model": { "id": "claude-opus-4-7[1m]", "display_name": "Opus 4.7 (1M context)" },
         "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
       },
       "expect_contains": [
-        "ccusage not installed",
-        "/cc-context-monitor"
+        "10% ctx",
+        "Opus 4.7 (1M context)"
       ],
       "expect_not_contains": [
-        "(green)",
-        "(yellow)",
-        "(red)"
+        "5h",
+        "7d"
       ],
       "expect_exit_code": 0
     },
@@ -138,34 +151,35 @@
         "cc-context-monitor"
       ],
       "expect_not_contains": [
-        "(green)",
-        "(yellow)",
-        "(red)"
+        "ctx"
       ],
       "expect_exit_code": 0
     },
     {
       "name": "annotation-preserved",
       "type": "positive",
-      "description": "CC_STATUSLINE_ANNOTATION is set in the environment. Expect the annotation to appear appended after the main segment, not replacing it.",
-      "stub_ccusage_output": "Opus | $0.50 session / $5.00 today / $30.00 block | 100,000 (10%)",
+      "description": "CC_STATUSLINE_ANNOTATION is set in the environment. Expect the annotation to appear appended after the main segments, not replacing them.",
+      "stub_ccusage_output": "",
       "stub_ccusage_exit": 0,
       "env": { "CC_STATUSLINE_ANNOTATION": "Remote control active" },
       "stdin_json": {
         "session_id": "eval-annotation",
         "transcript_path": "EVAL_TRANSCRIPT",
         "cwd": "/tmp",
-        "model": { "id": "claude-opus-4-7", "display_name": "Opus" },
-        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" }
+        "model": { "id": "claude-opus-4-7[1m]", "display_name": "Opus 4.7 (1M context)" },
+        "workspace": { "current_dir": "/tmp", "project_dir": "/tmp" },
+        "context_window": { "used_percentage": 10, "remaining_percentage": 90 },
+        "rate_limits": {
+          "five_hour": { "used_percentage": 5 },
+          "seven_day": { "used_percentage": 12 }
+        },
+        "output_style": { "name": "default" }
       },
       "expect_contains": [
-        "ctx 10%",
-        "(green)",
+        "10% ctx",
+        "5% 5h",
+        "12% 7d",
         "Remote control active"
-      ],
-      "expect_not_contains": [
-        "(yellow)",
-        "(red)"
       ],
       "expect_exit_code": 0
     }

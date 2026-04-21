@@ -176,23 +176,29 @@ else
   pass "statusline.sh does not 'source' untrusted input"
 fi
 
-# The transcript path must NOT be passed as a positional argument to a
-# subprocess without quoting. The defensive pattern is: pipe stdin to
-# ccusage, read the path via jq with -r into a quoted shell variable,
-# and only use it with `wc -l <"$var"` or similar. Check we never
-# construct a command line from the raw transcript path.
-if grep -nE '\$\{?transcript[A-Z_]*\}?[[:space:]]*[^"]' "$STATUSLINE" >/dev/null 2>&1; then
-  # Allow quoted usage only. This regex detects $transcript NOT followed
-  # by a quote character, which would indicate unquoted interpolation.
-  # Note: also accept usage inside already-quoted contexts (the check
-  # above specifically catches raw unquoted expansion).
-  :
-fi
-# A stronger check: assert we always quote the transcript variable
-if grep -nE '"\$\{?transcript[^}]*\}?"' "$STATUSLINE" >/dev/null 2>&1; then
-  pass "statusline.sh quotes the transcript path variable"
+# The wrapper must read ctx percent from the CC-native stdin payload.
+# This is the v2.1+ contract: .context_window.used_percentage (or
+# .remaining_percentage). Assert we reference at least one of those
+# so a regression to shelling-out-on-every-turn fails loudly.
+if grep -nE 'context_window\.(used_percentage|remaining_percentage)' "$STATUSLINE" >/dev/null 2>&1; then
+  pass "statusline.sh reads ctx percent from CC-native stdin field"
 else
-  fail "statusline.sh quotes the transcript path variable"
+  fail "statusline.sh reads ctx percent from CC-native stdin field"
+fi
+
+# Rate-limit segments are a key feature of the v0.2+ wrapper. Assert
+# we reference the five_hour and seven_day fields so dropping them
+# fails the test rather than silently shipping.
+if grep -nE 'rate_limits\.five_hour' "$STATUSLINE" >/dev/null 2>&1; then
+  pass "statusline.sh surfaces .rate_limits.five_hour"
+else
+  fail "statusline.sh surfaces .rate_limits.five_hour"
+fi
+
+if grep -nE 'rate_limits\.seven_day' "$STATUSLINE" >/dev/null 2>&1; then
+  pass "statusline.sh surfaces .rate_limits.seven_day"
+else
+  fail "statusline.sh surfaces .rate_limits.seven_day"
 fi
 
 # No curl, wget, or other network shell-outs in the wrapper itself.

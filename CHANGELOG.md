@@ -5,6 +5,23 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **cc-context-monitor 0.1.0 → 0.2.0**: rewrote `statusline.sh` to read
+  directly from Claude Code's native stdin payload
+  (`context_window.used_percentage`, `rate_limits.five_hour.used_percentage`,
+  `rate_limits.seven_day.used_percentage`, `model.display_name`, `cwd`)
+  on CC v2.1.x and newer. The output line now shows `cwd | branch* |
+  model | ●●○○○○○○○○ NN% ctx | ●●○○○○○○○○ NN% 5h | ●●●●●○○○○○ NN% 7d`
+  with three 10-dot bars sharing one green/yellow/red palette
+  (thresholds 49 / 74). Dropped the dollar-denominated ccusage
+  passthrough segment. Kept a `ccusage statusline` fallback for hosts
+  predating the native stdin fields. Color thresholds, bar width, and
+  annotation env vars are still overridable via `CC_CTX_GREEN_MAX`,
+  `CC_CTX_YELLOW_MAX`, `CC_CTX_BAR_WIDTH`, `CC_STATUSLINE_ANNOTATION`.
+  Structural tests, eval fixture, SKILL.md, and README.md updated to
+  match.
+
 ### Added
 
 - `## Examples` section added to every review skill in
