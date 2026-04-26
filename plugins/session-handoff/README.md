@@ -42,8 +42,8 @@ marketplace-qualified form — if two marketplaces ship a plugin named
 ## What it does
 
 At the end of a long session — debugging, multi-file changes, architectural decisions —
-run `/session-handoff` and Claude produces a fenced markdown block you can paste into a
-fresh session. The block captures:
+run `/session-handoff` and Claude produces a fenced markdown block, **copies it to your
+system clipboard**, and tells you to type `/clear` and paste. The block captures:
 
 - What you were doing (status per thread)
 - Decisions made (with rationale)
@@ -54,6 +54,13 @@ fresh session. The block captures:
 
 It short-circuits with a one-line "nothing to hand off" message when the session had no
 code changes, no decisions, and no in-flight work — no padded empty template.
+
+The clipboard step uses whichever copy tool exists on the host: `pbcopy` (macOS),
+`wl-copy` (Wayland), `xclip` or `xsel` (X11), `clip.exe` (WSL/Windows). If none are
+available, the skill says so and points at the on-disk log file you can paste from
+manually. The skill cannot run `/clear` for you — that's a Claude Code meta-command the
+harness intercepts, not something a tool call can invoke — so the workflow is one
+keystroke: `/clear`, then ⌘V (or Ctrl+V).
 
 ## Why a plugin (vs. copying the SKILL.md)
 
@@ -92,7 +99,9 @@ the prompt template in Step 4 of `SKILL.md`.
 TodoWrite`. Concretely, when `/session-handoff` fires:
 
 - **Bash** — runs read-only git commands (`git branch`, `git log`,
-  `git status`, `git remote`) to snapshot the branch state.
+  `git status`, `git remote`) to snapshot the branch state, plus a
+  single clipboard-copy invocation at the end (one of `pbcopy`,
+  `wl-copy`, `xclip`, `xsel`, `clip.exe` — whichever is present).
 - **Read** — reads project memory files under `~/.claude/projects/.../memory/`
   plus the handful of files the handoff tells the next session to read first.
 - **Write** — writes one log file to `~/.claude/data/session-handoff/logs/`.
@@ -124,6 +133,10 @@ install any plugin.
 - Optionally edits existing memory files when Step 3 of the procedure
   decides something is worth persisting long-term.
 - Emits a markdown brief to the conversation.
+- Pipes the same brief into the system clipboard via whichever of
+  `pbcopy` / `wl-copy` / `xclip` / `xsel` / `clip.exe` is installed.
+  No clipboard tool means no copy and a manual-paste hint — never an
+  install or upload to fix it.
 
 ### What this plugin doesn't do
 

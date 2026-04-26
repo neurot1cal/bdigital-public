@@ -11,9 +11,9 @@ allowed-tools: Bash, Read, Write, Edit, TaskList, TodoWrite
 
 Generate a self-contained prompt that lets a fresh Claude Code session resume where this one left off.
 
-Git state, file contents, and memory files are already recoverable by the next session — a new session starts with CLAUDE.md, memory, and full tool access. What's NOT recoverable is session-specific context: decisions made, approaches tried and rejected, gotchas discovered, and in-flight tasks. Focus the handoff on that.
+Git, files, and memory are already recoverable by the next session — it starts with CLAUDE.md, memory, and full tool access. What's NOT recoverable is session-specific context: decisions, rejected approaches, gotchas, in-flight tasks. Focus the handoff on that.
 
-**Reference:** This skill implements the "Clear — start a new session, usually with a brief you've distilled" pattern from [Anthropic's session management guide](https://claude.com/blog/using-claude-code-session-management-and-1m-context). The handoff IS the brief.
+**Reference:** implements the "Clear with a distilled brief" pattern from [Anthropic's session management guide](https://claude.com/blog/using-claude-code-session-management-and-1m-context).
 
 ## When to Use
 
@@ -114,23 +114,25 @@ Build a markdown block. Include only sections that have meaningful content — o
 ```
 ````
 
-**Guidelines for the prompt:**
-- Write it as if briefing a colleague who just sat down at your desk
-- Be specific: file paths, function names, error messages — not vague summaries
-- The "What Didn't Work" section is often the most valuable — it prevents wasted time
-- If the session was simple (one quick fix), the handoff can be 5 lines. Don't pad.
+**Guidelines:** brief a colleague at your desk. Specifics — file paths, function names, errors — not summaries. "What Didn't Work" is often the highest-value section. If the session was a quick fix, 5 lines is plenty; don't pad.
 
-**Self-check before outputting:** Re-read the prompt and ask: "If I were a fresh session reading only this plus the project's CLAUDE.md, could I immediately resume productive work?" If not, add the missing context.
+**Self-check:** could a fresh session reading only this plus CLAUDE.md resume productively? If not, add the missing context.
 
-### Step 5: Output and Save
+### Step 5: Output, Save, Copy
 
-1. **Display the prompt** — print the fenced block so the user can copy it
-2. **Save to log** (use dashes for time separators — colons break filenames). Write to a user-data directory outside the plugin install tree so logs survive plugin reinstalls and don't collide when multiple marketplaces ship a `session-handoff` plugin:
+1. **Display** the fenced markdown block in the conversation.
+2. **Save to log** at `~/.claude/data/session-handoff/logs/handoff-<YYYY-MM-DDTHH-MM-SS>.md` — dashes only (colons break filenames), `mkdir -p` if needed. User-data dir, not the plugin tree, so logs survive reinstalls.
+3. **Copy to clipboard** — pipe the saved log into the first tool the host has:
+   ```bash
+   for c in pbcopy wl-copy "xclip -selection clipboard" "xsel --clipboard --input" clip.exe; do
+     command -v ${c%% *} >/dev/null 2>&1 && eval "$c < \"\$LOG_PATH\"" && exit 0
+   done
+   echo "no clipboard tool found — paste manually from $LOG_PATH"
    ```
-   ~/.claude/data/session-handoff/logs/handoff-<YYYY-MM-DDTHH-MM-SS>.md
-   ```
-   Create the directory with `mkdir -p` if it doesn't exist.
-3. **Confirm** — tell the user where the log was saved
+   Covers macOS / Wayland / X11 / WSL. If none exist, the log on disk plus the brief in the transcript are the recovery paths.
+4. **Confirm** in one line: `Handoff copied to clipboard and saved to <log path>. Next: /clear, then paste.` If clipboard fell through: `Handoff saved to <log path> — copy manually, then /clear and paste.`
+
+`/clear` itself is a harness meta-command, not reachable from a tool call — the clipboard step closes the gap to one keystroke.
 
 ## What NOT to Include
 
@@ -145,7 +147,7 @@ The handoff captures what's **ephemeral** — everything else is already persist
 
 ## When to Initiate Handoff
 
-From [Anthropic's session management guide](https://claude.com/blog/using-claude-code-session-management-and-1m-context), context rot occurs as the context window fills — "performance degrades because attention spreads across more tokens and older irrelevant content becomes distracting." The five decision points at each turn are: Continue, Rewind, Clear, Compact, or Subagents. This skill implements **Clear** with a structured brief.
+Context rot degrades quality as the window fills (see [Anthropic's session management guide](https://claude.com/blog/using-claude-code-session-management-and-1m-context)). The five decision points each turn are Continue, Rewind, Clear, Compact, Subagents — this skill implements **Clear** with a structured brief.
 
 **Signs you should run `/session-handoff` soon:**
 - Auto-compaction has fired or is about to — the session is nearing context limits
