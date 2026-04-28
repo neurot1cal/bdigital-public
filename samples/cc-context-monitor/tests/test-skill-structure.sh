@@ -44,6 +44,7 @@ if [ -f "$STATUSLINE" ]; then pass "statusline.sh exists"; else fail "statusline
 if [ -f "$PLUGIN_JSON" ]; then pass "plugin.json exists"; else fail "plugin.json exists at ${PLUGIN_JSON}"; fi
 if [ -f "${PLUGIN_DIR}/LICENSE" ]; then pass "LICENSE exists"; else fail "LICENSE exists"; fi
 if [ -f "${PLUGIN_DIR}/README.md" ]; then pass "README.md exists"; else fail "README.md exists"; fi
+if [ -f "${PLUGIN_DIR}/TROUBLESHOOTING.md" ]; then pass "TROUBLESHOOTING.md exists"; else fail "TROUBLESHOOTING.md exists at ${PLUGIN_DIR}/TROUBLESHOOTING.md"; fi
 
 # If the critical files are missing, stop here — the rest will cascade.
 if [ "$FAIL" -gt 0 ]; then
@@ -108,6 +109,7 @@ echo "SKILL.md required sections:"
 check "has Overview" "^## Overview"
 check "has When to Use" "^## When to Use"
 check "has Procedure" "^## Procedure"
+check "has Troubleshooting" "^## Troubleshooting"
 check "has What NOT to Install Into" "^## What NOT to Install Into"
 
 # --- SKILL.md guardrails ---------------------------------------------------
