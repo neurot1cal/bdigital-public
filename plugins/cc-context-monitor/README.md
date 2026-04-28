@@ -90,6 +90,17 @@ the timestamped backup the skill wrote alongside `settings.json`:
 cp ~/.claude/settings.json.backup-YYYY-MM-DDTHH-MM-SS ~/.claude/settings.json
 ```
 
+## Troubleshooting
+
+If the statusline does not appear after install, the diagnostic ladder
+inside the skill resolves most cases. Inside Claude Code, just say
+"my statusline isn't showing" or "the bottom bar is blank" and the
+skill walks through the steps.
+
+For OS- and terminal-specific edge cases (Windows / WSL2 / Git Bash,
+JetBrains terminal ANSI bugs, tmux 256-color, font glyph issues),
+see [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) at the plugin root.
+
 ## Why a plugin (vs. configuring the statusline yourself)
 
 You can write your own bash script against the CC stdin contract and
@@ -119,10 +130,11 @@ plugins/cc-context-monitor/
 |   `-- plugin.json                      # plugin manifest (name, version, homepage)
 |-- LICENSE                              # MIT, distributed with the plugin
 |-- README.md                            # this file
+|-- TROUBLESHOOTING.md                   # OS / terminal-specific diagnostics
 |-- statusline.sh                        # the wrapper Claude Code runs on every turn
 `-- skills/
     `-- cc-context-monitor/
-        `-- SKILL.md                     # the user-invocable configuration skill
+        `-- SKILL.md                     # the user-invocable configuration + troubleshooting skill
 ```
 
 The `skills/<name>/SKILL.md` layout is the standard Claude Code plugin

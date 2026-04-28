@@ -1,6 +1,6 @@
 ---
 name: cc-context-monitor
-description: Use this skill whenever the user wants to configure, install, fix, wire up, customize, or revert their Claude Code statusline — or when they mention context-window fill, token usage, subscription quota, 5-hour session limits, 7-day weekly quota, ccusage, or any "how much Claude do I have left" visibility concern. Trigger on symptom descriptions too — "my statusline went blank", "the bottom bar doesn't show anything useful", "I keep hitting the weekly cap", "I want context % in my terminal", "show my weekly usage" — and even when the user doesn't name the skill by name. The installer writes one line to ~/.claude/settings.json that wires a color-banded three-bar statusline (context / 5-hour / 7-day, green under 50% / yellow under 75% / red at 75%+) into every Claude Code turn.
+description: Use this skill whenever the user wants to configure, install, fix, wire up, customize, troubleshoot, or revert their Claude Code statusline — or when they mention context-window fill, token usage, subscription quota, 5-hour session limits, 7-day weekly quota, ccusage, or any "how much Claude do I have left" visibility concern. Trigger on symptom descriptions too — "my statusline went blank", "the bottom bar doesn't show anything useful", "installed the plugin but nothing shows", "ctx n/a", "no statusline input", "weird characters where dots should be", "colors look gray", "I keep hitting the weekly cap", "I want context % in my terminal", "show my weekly usage" — and even when the user doesn't name the skill by name. The installer writes one line to ~/.claude/settings.json that wires a color-banded three-bar statusline (context / 5-hour / 7-day, green under 50% / yellow under 75% / red at 75%+) into every Claude Code turn. Includes a 7-step diagnostic ladder for cases where the line is missing, blank, or rendering wrong.
 user-invocable: true
 allowed-tools: Bash, Read, Write, Edit
 ---
@@ -120,6 +120,68 @@ Tell the user:
 2. Which line was written to `settings.json`
 3. That a fresh Claude Code session will now show the three-bar statusline
 4. How to revert: `cp ~/.claude/settings.json.backup-<timestamp> ~/.claude/settings.json`
+
+## Troubleshooting
+
+When the statusline is blank, missing, or wrong, run this ladder. First match wins. For OS- and terminal-specific cases, see [`TROUBLESHOOTING.md`](../../TROUBLESHOOTING.md).
+
+### 1. Is the plugin file present?
+
+```bash
+ls ~/.claude/plugins/marketplaces/bdigital-public/plugins/cc-context-monitor/statusline.sh
+```
+
+Missing → re-run `/plugin marketplace add neurot1cal/bdigital-public` and `/plugin install cc-context-monitor@bdigital-public`.
+
+### 2. Was settings.json wired up?
+
+```bash
+jq '.statusLine' ~/.claude/settings.json
+```
+
+`null` → skill was never invoked. Run `/cc-context-monitor`. **Then quit and relaunch Claude Code** — settings changes do not apply mid-session.
+
+### 3. Does the wired path exist?
+
+```bash
+SCRIPT=$(jq -r '.statusLine.command' ~/.claude/settings.json | awk '{print $2}')
+ls -la "$SCRIPT"
+```
+
+Missing → marketplace resolved to a different cache path than expected. Re-run `/cc-context-monitor` to rewrite.
+
+### 4. Does the script render with a fake payload?
+
+```bash
+echo '{"cwd":"'"$PWD"'","model":{"display_name":"Opus 4.7"},"context_window":{"used_percentage":18},"rate_limits":{"five_hour":{"used_percentage":20},"seven_day":{"used_percentage":54}}}' | bash "$SCRIPT"
+```
+
+Three colored bars → CC isn't invoking it (relaunch CC). `no statusline input` → stdin contract broken (see step 7).
+
+### 5. Are dependencies installed?
+
+`jq` is required. `command -v jq || echo MISSING`. Install:
+
+- macOS: `brew install jq`
+- Debian/Ubuntu/WSL2: `sudo apt install jq`
+- Fedora/RHEL: `sudo dnf install jq`
+- Git Bash (MSYS2): `pacman -S mingw-w64-x86_64-jq`
+
+### 6. Is Claude Code recent enough?
+
+Native `context_window` lands in v2.1.x+. Older builds fall back to `ccusage` (`npm i -g ccusage`). Without either, the bar reads `ctx n/a`. Confirm: `claude --version`.
+
+### 7. Capture live stdin
+
+If 1–6 pass, set `CC_CTX_DEBUG=1`, restart CC, read `/tmp/cc-context-monitor.stdin.json`. Missing `context_window` or `rate_limits` confirms a CC-version mismatch.
+
+### Quick OS / terminal pointers
+
+- **tmux / screen**: `TERM=screen` strips 256-color. Run `tmux -2` or set `default-terminal "screen-256color"`.
+- **JetBrains terminal**: ANSI bugs — enable "Use IDEA terminal emulation" or use an external terminal.
+- **Windows native**: bash required. Use WSL2 or Git Bash.
+- **Light themes**: yellow-on-white is unreadable. Bump `CC_CTX_GREEN_MAX=40`.
+- **Box glyphs render as `??`**: needs UTF-8 font with Geometric Shapes (Cascadia Code, JetBrains Mono, MesloLGS NF) and `LANG=*.UTF-8`.
 
 ## What NOT to Install Into
 
