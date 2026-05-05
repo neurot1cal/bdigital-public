@@ -4,7 +4,7 @@ A Claude Code plugin that ships an info-dense, color-banded statusline
 plus a single user-invocable skill: **cc-context-monitor**.
 
 ```
-~/git/bdigital-public | feat/branch* | Opus 4.7 (1M context) | ●●○○○○○○○○ 18% ctx | ●●○○○○○○○○ 20% 5h ↻2h39m | ●●●●●○○○○○ 54% 7d ↻1d11h
+~/git/bdigital-public | feat/branch* | Opus 4.7 (1M context) | ●●○○○○○○○○ 18% ctx | ●●○○○○○○○○ 20% 5h | ●●●●●○○○○○ 54% 7d
 ```
 
 The bottom-of-terminal line surfaces six signals at a glance:
@@ -18,11 +18,11 @@ The bottom-of-terminal line surfaces six signals at a glance:
    **green** under 50%, **yellow** under 75%, **red** at 75% and up.
 5. **5-hour session quota** — same 10-dot + percent layout, same
    color bands. This is the rolling rate-limit window Anthropic
-   enforces on Claude subscriptions. A trailing dim `↻Xh Ym` shows
-   the time until the bucket resets, when CC exposes that timestamp.
+   enforces on Claude subscriptions. Opt in to a trailing dim
+   `↻Xh Ym` reset-time suffix with `CC_CTX_SHOW_RESET=1`.
 6. **7-day weekly quota** — same layout, same bands. The one to watch
-   for long stretches of heavy use. Same dim `↻XdYh` reset suffix as
-   the 5h segment.
+   for long stretches of heavy use. Same opt-in `↻XdYh` reset suffix
+   as the 5h segment.
 
 Three bars with one shared palette lets you spot where pressure is
 coming from with a single glance — context fullness, session burn, or
@@ -102,8 +102,10 @@ without editing the script:
 - `CC_CTX_GREEN_MAX` (default `49`) — upper bound of the green band.
 - `CC_CTX_YELLOW_MAX` (default `74`) — upper bound of the yellow band.
 - `CC_CTX_BAR_WIDTH` (default `10`) — bar width in dot-cells.
-- `CC_CTX_HIDE_RESET` (default `0`) — set to `1` to suppress the
+- `CC_CTX_SHOW_RESET` (default `0`) — set to `1` to render the
   trailing `↻Xh Ym` reset-time suffix on the 5h and 7d segments.
+  Off by default to keep the statusline quiet; the percent bar
+  already conveys pressure on each bucket.
 - `CC_STATUSLINE_ANNOTATION` — appended after the main segment.
 - `CC_CTX_DEBUG` — set to `1` to dump the stdin JSON blob to
   `/tmp/cc-context-monitor.stdin.json` for inspection.

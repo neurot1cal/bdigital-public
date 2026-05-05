@@ -52,9 +52,10 @@ CC_CTX_GREEN_MAX="${CC_CTX_GREEN_MAX:-49}"
 CC_CTX_YELLOW_MAX="${CC_CTX_YELLOW_MAX:-74}"
 # Width of the progress bar in dot-cells.
 CC_CTX_BAR_WIDTH="${CC_CTX_BAR_WIDTH:-10}"
-# Set to 1 to suppress the trailing "↻Xh Ym" reset-time suffix on the
-# 5h and 7d segments. Default 0 (show) preserves the new behavior.
-CC_CTX_HIDE_RESET="${CC_CTX_HIDE_RESET:-0}"
+# Set to 1 to render the trailing "↻Xh Ym" reset-time suffix on the
+# 5h and 7d segments. Default 0 (hide) keeps the statusline quiet;
+# the percent bar already conveys pressure on each bucket.
+CC_CTX_SHOW_RESET="${CC_CTX_SHOW_RESET:-0}"
 
 # ANSI escape sequences. Use printf '\033' so the file stays 7-bit ASCII.
 ESC=$(printf '\033')
@@ -225,7 +226,7 @@ fi
 # rolled over but CC hasn't refreshed yet).
 fmt_reset() {
   local epoch="$1"
-  [ "$CC_CTX_HIDE_RESET" = "1" ] && return 0
+  [ "$CC_CTX_SHOW_RESET" = "1" ] || return 0
   [ -z "$epoch" ] && return 0
   # Strip any decimal portion CC might emit, then validate it's all digits
   # so a malformed field doesn't poison the arithmetic that follows.
