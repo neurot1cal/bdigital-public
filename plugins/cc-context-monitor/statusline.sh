@@ -52,6 +52,9 @@ CC_CTX_GREEN_MAX="${CC_CTX_GREEN_MAX:-49}"
 CC_CTX_YELLOW_MAX="${CC_CTX_YELLOW_MAX:-74}"
 # Width of the progress bar in dot-cells.
 CC_CTX_BAR_WIDTH="${CC_CTX_BAR_WIDTH:-10}"
+# Set to 1 to suppress the trailing "↻Xh Ym" reset-time suffix on the
+# 5h and 7d segments. Default 0 (show) preserves the new behavior.
+CC_CTX_HIDE_RESET="${CC_CTX_HIDE_RESET:-0}"
 
 # ANSI escape sequences. Use printf '\033' so the file stays 7-bit ASCII.
 ESC=$(printf '\033')
@@ -120,6 +123,10 @@ CTX_REMAINING=$(jq_field '.context_window.remaining_percentage' "")
 CTX_USED_DIRECT=$(jq_field '.context_window.percent_used // .context_window.used_percentage' "")
 RATE_5H=$(to_int "$(jq_field '.rate_limits.five_hour.used_percentage' "")")
 RATE_7D=$(to_int "$(jq_field '.rate_limits.seven_day.used_percentage' "")")
+# Reset timestamps are unix epoch seconds. Optional — older CC builds
+# omit them, newer ones (v2.1.x+) emit them alongside used_percentage.
+RESET_5H=$(jq_field '.rate_limits.five_hour.resets_at' "")
+RESET_7D=$(jq_field '.rate_limits.seven_day.resets_at' "")
 
 # --- Compute the context-used percent --------------------------------------
 CTX_PCT=""
@@ -211,6 +218,37 @@ if ! printf '%s' "$MODEL_NAME" | grep -qE '[0-9]'; then
   fi
 fi
 
+# --- Reset-time formatter --------------------------------------------------
+# Format an absolute epoch-seconds timestamp as a compact "time until
+# reset" string: "45m", "2h13m", or "1d11h". Returns empty when the
+# input is empty or the reset is already in the past (the bucket has
+# rolled over but CC hasn't refreshed yet).
+fmt_reset() {
+  local epoch="$1"
+  [ "$CC_CTX_HIDE_RESET" = "1" ] && return 0
+  [ -z "$epoch" ] && return 0
+  # Strip any decimal portion CC might emit, then validate it's all digits
+  # so a malformed field doesn't poison the arithmetic that follows.
+  epoch="${epoch%%.*}"
+  case "$epoch" in
+    ''|*[!0-9]*) return 0 ;;
+  esac
+  local now delta d h m
+  now=$(date +%s)
+  delta=$(( epoch - now ))
+  [ "$delta" -le 0 ] && return 0
+  d=$(( delta / 86400 ))
+  h=$(( (delta % 86400) / 3600 ))
+  m=$(( (delta % 3600) / 60 ))
+  if [ "$d" -gt 0 ]; then
+    printf '%dd%dh' "$d" "$h"
+  elif [ "$h" -gt 0 ]; then
+    printf '%dh%dm' "$h" "$m"
+  else
+    printf '%dm' "$m"
+  fi
+}
+
 # --- Band-color helper ------------------------------------------------------
 # Returns the ANSI escape for green/yellow/red based on an integer
 # percent and the GREEN/YELLOW thresholds. Call with: band_color <pct>
@@ -297,12 +335,22 @@ fi
 if [ -n "$RATE_5H" ]; then
   c5h=$(band_color "$RATE_5H")
   bar5h=$(render_bar "$RATE_5H" "$c5h")
-  segments+=("$(printf '%s %s%s%% 5h%s' "$bar5h" "$c5h" "$RATE_5H" "$COLOR_RESET")")
+  reset5h_str=$(fmt_reset "$RESET_5H")
+  if [ -n "$reset5h_str" ]; then
+    segments+=("$(printf '%s %s%s%% 5h%s %s↻%s%s' "$bar5h" "$c5h" "$RATE_5H" "$COLOR_RESET" "$COLOR_DIM" "$reset5h_str" "$COLOR_RESET")")
+  else
+    segments+=("$(printf '%s %s%s%% 5h%s' "$bar5h" "$c5h" "$RATE_5H" "$COLOR_RESET")")
+  fi
 fi
 if [ -n "$RATE_7D" ]; then
   c7d=$(band_color "$RATE_7D")
   bar7d=$(render_bar "$RATE_7D" "$c7d")
-  segments+=("$(printf '%s %s%s%% 7d%s' "$bar7d" "$c7d" "$RATE_7D" "$COLOR_RESET")")
+  reset7d_str=$(fmt_reset "$RESET_7D")
+  if [ -n "$reset7d_str" ]; then
+    segments+=("$(printf '%s %s%s%% 7d%s %s↻%s%s' "$bar7d" "$c7d" "$RATE_7D" "$COLOR_RESET" "$COLOR_DIM" "$reset7d_str" "$COLOR_RESET")")
+  else
+    segments+=("$(printf '%s %s%s%% 7d%s' "$bar7d" "$c7d" "$RATE_7D" "$COLOR_RESET")")
+  fi
 fi
 
 # Join segments with " | ". IFS only uses its first char when expanding
