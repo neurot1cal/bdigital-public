@@ -5,6 +5,17 @@ follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **cc-context-monitor 0.2.1 → 0.3.0**: optional dim trailing
+  `↻Xh Ym` (or `↻XdYh`) on the 5h and 7d segments, indicating time
+  until each rate-limit bucket resets. Sourced from
+  `.rate_limits.{five_hour,seven_day}.resets_at` (Unix epoch seconds)
+  in the Claude Code stdin payload. **Off by default** to keep the
+  statusline quiet; opt in with `CC_CTX_SHOW_RESET=1`. The suffix is
+  also omitted when the field is absent (older CC builds) or already
+  in the past, so the segment degrades gracefully.
+
 ### Fixed
 
 - **cc-context-monitor 0.2.0 → 0.2.1**: stdin rate-limit percentages

@@ -18,9 +18,11 @@ The bottom-of-terminal line surfaces six signals at a glance:
    **green** under 50%, **yellow** under 75%, **red** at 75% and up.
 5. **5-hour session quota** — same 10-dot + percent layout, same
    color bands. This is the rolling rate-limit window Anthropic
-   enforces on Claude subscriptions.
+   enforces on Claude subscriptions. Opt in to a trailing dim
+   `↻Xh Ym` reset-time suffix with `CC_CTX_SHOW_RESET=1`.
 6. **7-day weekly quota** — same layout, same bands. The one to watch
-   for long stretches of heavy use.
+   for long stretches of heavy use. Same opt-in `↻XdYh` reset suffix
+   as the 5h segment.
 
 Three bars with one shared palette lets you spot where pressure is
 coming from with a single glance — context fullness, session burn, or
@@ -39,7 +41,9 @@ already carries everything the statusline needs:
 - `cwd` → the directory segment
 - `context_window.used_percentage` → the ctx bar
 - `rate_limits.five_hour.used_percentage` → the 5h bar
+- `rate_limits.five_hour.resets_at` → the 5h `↻` reset suffix (epoch seconds, optional)
 - `rate_limits.seven_day.used_percentage` → the 7d bar
+- `rate_limits.seven_day.resets_at` → the 7d `↻` reset suffix (epoch seconds, optional)
 
 No external tool is required on v2.1.x hosts — the wrapper reads
 stdin with `jq`, formats, and prints. On older Claude Code versions
@@ -89,6 +93,24 @@ the timestamped backup the skill wrote alongside `settings.json`:
 ```
 cp ~/.claude/settings.json.backup-YYYY-MM-DDTHH-MM-SS ~/.claude/settings.json
 ```
+
+## Tweaks via environment
+
+The wrapper reads a few env vars at render time, so you can override
+without editing the script:
+
+- `CC_CTX_GREEN_MAX` (default `49`) — upper bound of the green band.
+- `CC_CTX_YELLOW_MAX` (default `74`) — upper bound of the yellow band.
+- `CC_CTX_BAR_WIDTH` (default `10`) — bar width in dot-cells.
+- `CC_CTX_SHOW_RESET` (default `0`) — set to `1` to render the
+  trailing `↻Xh Ym` reset-time suffix on the 5h and 7d segments.
+  Off by default to keep the statusline quiet; the percent bar
+  already conveys pressure on each bucket.
+- `CC_STATUSLINE_ANNOTATION` — appended after the main segment.
+- `CC_CTX_DEBUG` — set to `1` to dump the stdin JSON blob to
+  `/tmp/cc-context-monitor.stdin.json` for inspection.
+
+Set them in your shell profile, or per-session before launching CC.
 
 ## Troubleshooting
 
