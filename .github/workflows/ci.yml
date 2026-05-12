@@ -24,7 +24,7 @@ jobs:
       # Use `npm install` rather than `npm ci` because this repo intentionally
       # does not commit a package-lock.json (the sample is meant to be copied
       # into other repos that have their own lock policies).
-      - run: npm install --no-audit --no-fund
+      - run: npm install --no-audit --no-fund --ignore-scripts
       - run: npm run check
       - run: npm run build
 
