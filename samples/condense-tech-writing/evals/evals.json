@@ -1,0 +1,117 @@
+{
+  "skill_name": "condense-tech-writing",
+  "evals": [
+    {
+      "id": 0,
+      "name": "trivial-tight",
+      "prompt": "Tighten this section of a design doc for me, it feels too wordy:\n\n---\n## Webhook signature validation\n\nThe webhook handler validates the X-Signature header against the shared secret using HMAC-SHA256 with constant-time comparison. Requests without a valid signature return 401.\n---\n\nThanks.",
+      "expected_output": "Skill should short-circuit. The section is 35 words and already tight (every word carries information: API surface X-Signature, algorithm HMAC-SHA256, the constant-time-comparison invariant, the 401 status). The skill should tell the user no condensing is needed and stop rather than producing a marginally shorter version that risks losing one of these specifics.",
+      "assertions": [
+        {
+          "text": "Output explicitly tells the user the draft is already tight and does not need condensing",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output does NOT produce a trimmed version of the draft (no 'Trimmed draft' block, no rewritten section)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves the technical specifics (X-Signature, HMAC-SHA256, constant-time, 401) if quoted back at all",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "bloated-design-doc-section",
+      "prompt": "Can you condense this section of my design doc? It's way too wordy but I don't want to lose any of the actual technical decisions. Target around half the length.\n\n---\n## Decision: storage layer for clip artifacts\n\nIn order to support the storage requirements of the clip storefront, we will need to make a decision about which storage backend to use for the underlying video artifacts. It is worth noting that there are several options available to us in this space, and each comes with its own tradeoffs that we need to carefully consider before moving forward with implementation.\n\nAfter evaluating the available options, we have decided to use Cloudflare R2 as our primary object storage backend, with the bucket name bdigital-clips. This decision was made for several reasons that are worth discussing in detail. First, R2 has zero egress fees, which is critically important for our use case because clips are downloaded by paying customers and we want to maximize margin per sale rather than giving a substantial portion of revenue back to the cloud provider in the form of bandwidth charges. Second, R2 offers an S3-compatible API, which means that we can use existing S3 SDKs and tooling without having to write a custom client. Third, R2 is part of the broader Cloudflare ecosystem that we are already using for our Workers deployment, our DNS, and our CDN, so adopting it does not introduce a new vendor relationship that we would need to manage separately.\n\nIt is important to understand that there are some tradeoffs associated with this choice. R2's API is eventually consistent for list operations, which means that newly uploaded files may not appear in list responses for a short period of time. In practice, this means that our upload pipeline needs to be careful not to rely on list-after-write semantics, and instead should track uploaded keys in our own data store. The clip-upload pipeline already does this via the clips.json data file that is committed to the repo, so this constraint does not affect us.\n\nIn the next section, we will discuss the access control model for presigned download URLs.\n---",
+      "expected_output": "Trimmed draft around 180-220 words (down from ~380, so 40-50% reduction), preserving every technical specific: Cloudflare R2, bucket name bdigital-clips, zero egress fees, S3-compatible API, eventual consistency on list operations, the clips.json mitigation. Diff log should call out cut filler ('It is worth noting that', 'In order to support', 'After evaluating the available options', 'It is important to understand that', 'In the next section, we will discuss') and the closing transition sentence. Stats block with original/trimmed/reduction counts. Should NOT genericize R2 to 'object storage' or drop the eventual-consistency tradeoff.",
+      "assertions": [
+        {
+          "text": "Output preserves 'Cloudflare R2' (not genericized to 'object storage')",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves 'bdigital-clips' bucket name",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves the zero egress fees claim",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves the eventual-consistency tradeoff (not dropped or hedged)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves the clips.json mitigation",
+          "type": "qualitative"
+        },
+        {
+          "text": "Trimmed word count is between 150 and 240 words (target ~50% reduction from ~380)",
+          "type": "quantitative"
+        },
+        {
+          "text": "Output includes a diff log identifying the filler phrases that were cut",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output includes word count stats (original / trimmed / percentage)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Trimmed draft contains no em dashes",
+          "type": "quantitative"
+        },
+        {
+          "text": "Closing 'In the next section, we will discuss' transition sentence is cut",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "generic-security-block",
+      "prompt": "This Security section of a design doc reads like it could be in any design doc. Help me cut it down — keep what's specific to our system, drop the generic best-practices wallpaper.\n\n---\n## Security\n\nSecurity is a critical consideration in any modern web application, and our clip storefront is no exception. We must ensure that user data is protected, that authentication and authorization are handled correctly, and that the system is resilient against common attack vectors. This section outlines the security model for the storefront.\n\nFor authentication, we follow industry best practices. Passwords are never stored in plaintext, are hashed using a strong algorithm with a sufficient work factor, and we use HTTPS everywhere to prevent man-in-the-middle attacks. We also implement rate limiting on authentication endpoints to mitigate brute-force attacks, and we use secure session cookies with the HttpOnly and Secure flags set. CSRF protection is implemented via the standard double-submit cookie pattern.\n\nFor the specific case of presigned download URLs in our system, we use a 1-hour TTL on the URL signature. The URL is generated by the /api/download endpoint after Stripe webhook confirms payment, and the URL is bound to a specific clip ID and customer email. The 1-hour TTL was chosen to balance two concerns: making the URL long-lived enough that customers can complete a download on slow connections, while short enough that a leaked URL does not give an attacker indefinite access.\n\nIn terms of data privacy, we take this very seriously. We comply with all applicable regulations, we minimize the data we collect, and we provide users with the ability to delete their data on request. This is consistent with our overall commitment to user privacy.\n---",
+      "expected_output": "Heavy cuts on the generic web-app-best-practices paragraph (the second paragraph with HTTPS, password hashing, CSRF — all generic and not system-specific) and the generic data-privacy closer (last paragraph). The middle paragraph about the 1-hour TTL on presigned URLs is system-specific and should be preserved or only lightly trimmed. Final output should be ~120-160 words (down from ~310, so 50-60% reduction). The skill should call out in the diff log that the cut paragraphs were generic best-practices applicable to any web app.",
+      "assertions": [
+        {
+          "text": "Output preserves the 1-hour TTL on presigned URLs",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves the /api/download endpoint name",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves the Stripe-webhook-confirms-payment trigger",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output preserves the clip-ID-and-customer-email URL binding",
+          "type": "qualitative"
+        },
+        {
+          "text": "The generic web-app authentication paragraph is heavily cut or removed",
+          "type": "qualitative"
+        },
+        {
+          "text": "The generic data-privacy closing paragraph is cut",
+          "type": "qualitative"
+        },
+        {
+          "text": "Trimmed word count is between 100 and 180 words (target ~50-60% reduction from ~310)",
+          "type": "quantitative"
+        },
+        {
+          "text": "Diff log explicitly identifies the cut paragraphs as 'generic' or applicable to any web app (not system-specific)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output includes word count stats (original / trimmed / percentage)",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "expectations": [
+    {"text": "Output preserves 'Cloudflare R2'", "passed": true, "evidence": "Line: 'Clip artifacts will be stored in Cloudflare R2, bucket bdigital-clips.'"},
+    {"text": "Output preserves 'bdigital-clips' bucket name", "passed": true, "evidence": "Preserved verbatim."},
+    {"text": "Output preserves the zero egress fees claim", "passed": true, "evidence": "Sentence: 'R2 has zero egress fees, keeping per-sale margin intact'."},
+    {"text": "Output preserves the eventual-consistency tradeoff", "passed": true, "evidence": "Sentence: 'R2 list operations are eventually consistent'."},
+    {"text": "Output preserves the clips.json mitigation", "passed": true, "evidence": "Sentence: 'The current clips.json file already handles this.'"},
+    {"text": "Trimmed word count is between 150 and 240 words", "passed": false, "evidence": "111 words. 39 under the floor. The baseline over-cut to ~63% reduction when target was ~50%."},
+    {"text": "Output includes a diff log identifying the filler phrases that were cut", "passed": false, "evidence": "No structured diff log. Brief summary at the end of the response covers cuts in prose only ('all the hedging preamble, the redundant setup, padding'). Not auditable line-by-line."},
+    {"text": "Output includes word count stats", "passed": false, "evidence": "Approximate word counts in prose ('about 370 words; condensed about 110 — roughly 70% shorter') but no Original/Trimmed/Reduction/Rejected-edits structured block."},
+    {"text": "Trimmed draft contains no em dashes", "passed": false, "evidence": "Line: 'must not rely on list-after-write semantics — track uploaded keys in an external data store'. Em dash present in the trimmed output."},
+    {"text": "Closing 'In the next section, we will discuss' transition sentence is cut", "passed": true, "evidence": "Cut and replaced with 'Next: access control model for presigned download URLs.'"}
+  ],
+  "pass_rate": 0.6,
+  "passed": 6,
+  "total": 10
+}
