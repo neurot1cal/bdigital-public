@@ -1,6 +1,6 @@
 {
   "name": "cursor-team-kit",
-  "description": "Claude Code port of Cursor's team-kit plugin — 16 skills + 2 subagents for CI loops, PR review, shipping, verification, CLI/UI control, code-quality audits, and weekly work summaries. Adapted to Claude Code primitives (frontmatter, subagent invocation, tool refs). Original by Cursor, MIT-licensed; ported and maintained by bdigital media with full attribution.",
+  "description": "Claude Code port of Cursor's team-kit plugin — 18 skills + 2 subagents for CI loops, PR review, shipping, verification, CLI/UI control, code-quality audits, and weekly work summaries. Adapted to Claude Code primitives (frontmatter, subagent invocation, tool refs). Original by Cursor, MIT-licensed; ported and maintained by bdigital media with full attribution.",
   "version": "0.1.0",
   "category": "developer-tools",
   "author": {

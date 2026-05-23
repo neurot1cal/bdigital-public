@@ -24,7 +24,7 @@ See [`PORTING-NOTES.md`](./PORTING-NOTES.md) for the per-file change log.
 
 ## Components
 
-### Skills (16)
+### Skills (18)
 
 | Skill | Description |
 |:------|:------------|
