@@ -24,7 +24,7 @@
     },
     {
       "name": "cursor-team-kit",
-      "description": "Claude Code port of Cursor's team-kit plugin — 16 skills + 2 subagents for CI loops, PR review, shipping, verification, CLI/UI control, code-quality audits, and weekly work summaries. Original by Team Cursor (plugins@cursor.com), MIT-licensed; ported and maintained by bdigital media with full attribution. See the plugin's PORTING-NOTES.md for the per-file cursor → Claude Code adaptation log.",
+      "description": "Claude Code port of Cursor's team-kit plugin — 18 skills + 2 subagents for CI loops, PR review, shipping, verification, CLI/UI control, code-quality audits, and weekly work summaries. Original by Team Cursor (plugins@cursor.com), MIT-licensed; ported and maintained by bdigital media with full attribution. See the plugin's PORTING-NOTES.md for the per-file cursor → Claude Code adaptation log.",
       "category": "developer-tools",
       "source": "./plugins/cursor-team-kit",
       "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/cursor-team-kit"

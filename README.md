@@ -16,7 +16,7 @@ bdigital-public/
 ├── plugins/                    # Installable plugins (one-command install via /plugin)
 │   ├── session-handoff/        # Brief-generating skill for the /clear-then-resume workflow
 │   ├── cc-context-monitor/     # Three-bar color-banded statusline: ctx / 5h / 7d
-│   └── cursor-team-kit/        # Claude Code port of Cursor's team-kit (16 skills + 2 subagents)
+│   └── cursor-team-kit/        # Claude Code port of Cursor's team-kit (18 skills + 2 subagents)
 ├── samples/                    # Read-the-source versions (copy into your own repo)
 │   ├── pr-review/              # Claude-skills-based automated PR review + eval runner
 │   ├── session-handoff/        # Same skill as plugins/session-handoff, with tests + evals
@@ -83,7 +83,7 @@ and [`plugins/cc-context-monitor/statusline.sh`](plugins/cc-context-monitor/stat
 
 ### `plugins/cursor-team-kit/`
 
-Claude Code port of [Team Cursor's `cursor-team-kit`](https://github.com/cursor/plugins/tree/main/cursor-team-kit) — 16 skills and 2 subagents for CI loops, PR review, shipping, verification, CLI/UI control harnesses, code-quality audits, and weekly work summaries. Original work © 2026 Cursor (MIT). This port preserves Cursor's authorship, copyright, and license; every adapted file points back to the upstream source.
+Claude Code port of [Team Cursor's `cursor-team-kit`](https://github.com/cursor/plugins/tree/main/cursor-team-kit) — 18 skills and 2 subagents for CI loops, PR review, shipping, verification, CLI/UI control harnesses, code-quality audits, and weekly work summaries. Original work © 2026 Cursor (MIT). This port preserves Cursor's authorship, copyright, and license; every adapted file points back to the upstream source.
 
 Highlights:
 
