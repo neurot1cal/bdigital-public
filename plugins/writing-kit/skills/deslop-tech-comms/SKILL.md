@@ -207,7 +207,7 @@ Constraint: ≤500 chars, no greeting, no sign-off, ≤1 link
 Title: <verb-led, ≤10 words>
 TL;DR: <2–4 sentences: the problem and the proposed answer>
 Context: <what the reader needs to know to evaluate the proposal>
-Proposal: <the actual plan, with the load-bearing technical content>
+Proposal: <the actual plan, with the substantive technical content>
 Alternatives considered: <each named, with a sentence on why rejected>
 Risks and open questions: <specific failure modes, not "this might be hard">
 Decision and next steps: <who decides by when; what unblocks next>
