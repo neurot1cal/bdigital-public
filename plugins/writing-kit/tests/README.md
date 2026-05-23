@@ -45,7 +45,7 @@ The check asserts:
 This iteration ships **fixture-level** assertions. A full eval that runs the
 skills as LLM calls and grades the outputs against the expected fixtures is the
 next iteration — that follows the pattern set by
-`samples/condense-tech-writing/scripts/run-evals.mjs` in this repo. The current
+`samples/pr-review/scripts/run-evals.mjs` in this repo. The current
 check guards against the fastest-decaying failure mode (the bans drifting out
 of the two SKILL.md files, or the fixtures themselves containing the patterns
 they claim to remove).

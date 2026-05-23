@@ -42,7 +42,6 @@ by [`scripts/sync-readme.mjs`](scripts/sync-readme.mjs). Do not edit the table b
 |--------|----------|---------|------|
 | `session-handoff` | productivity | `/plugin install session-handoff@bdigital-public` | [README](plugins/session-handoff/README.md) |
 | `cc-context-monitor` | productivity | `/plugin install cc-context-monitor@bdigital-public` | [README](plugins/cc-context-monitor/README.md) |
-| `condense-tech-writing` | productivity | `/plugin install condense-tech-writing@bdigital-public` | [README](plugins/condense-tech-writing/README.md) |
 | `cursor-team-kit` | developer-tools | `/plugin install cursor-team-kit@bdigital-public` | [README](plugins/cursor-team-kit/README.md) |
 | `writing-kit` | writing | `/plugin install writing-kit@bdigital-public` | [README](plugins/writing-kit/README.md) |
 <!-- /AUTOGEN:plugins-table -->
@@ -57,11 +56,10 @@ bdigital-public/
 ├── plugins/                    # Canonical: full plugin bundles (Claude Code marketplace)
 │   ├── session-handoff/        # productivity
 │   ├── cc-context-monitor/     # productivity
-│   ├── condense-tech-writing/  # productivity
 │   ├── cursor-team-kit/        # developer-tools
 │   └── writing-kit/            # writing
 ├── skills/                     # Auto-generated mirrors for `npx openskills install`
-│   └── (23 skill mirrors, one per skill, byte-identical to plugins/<plugin>/skills/<skill>/)
+│   └── (22 skill mirrors, one per skill, byte-identical to plugins/<plugin>/skills/<skill>/)
 ├── samples/                    # Hand-maintained read-the-source views (tests + evals + blog mirroring)
 │   ├── pr-review/              # Claude-skills-based automated PR review + eval runner
 │   ├── session-handoff/        # Same skill + tests + scenario fixtures
@@ -101,7 +99,6 @@ standard.
 /plugin marketplace add neurot1cal/bdigital-public
 /plugin install session-handoff@bdigital-public
 /plugin install cc-context-monitor@bdigital-public
-/plugin install condense-tech-writing@bdigital-public
 /plugin install cursor-team-kit@bdigital-public
 /plugin install writing-kit@bdigital-public
 ```
@@ -115,7 +112,6 @@ its full install matrix, tools granted, and trust model:
 <!-- AUTOGEN:plugin-docs -->
 - [`plugins/session-handoff/README.md`](plugins/session-handoff/README.md)
 - [`plugins/cc-context-monitor/README.md`](plugins/cc-context-monitor/README.md)
-- [`plugins/condense-tech-writing/README.md`](plugins/condense-tech-writing/README.md)
 - [`plugins/cursor-team-kit/README.md`](plugins/cursor-team-kit/README.md)
 - [`plugins/writing-kit/README.md`](plugins/writing-kit/README.md)
 <!-- /AUTOGEN:plugin-docs -->
