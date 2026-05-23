@@ -1,0 +1,52 @@
+{
+  "skill_name": "condense-tech-writing",
+  "iteration": 1,
+  "configurations": [
+    {
+      "name": "with_skill",
+      "pass_rate": 0.909,
+      "passed": 20,
+      "total": 22,
+      "mean_duration_seconds": 33.6,
+      "mean_total_tokens": 23850
+    },
+    {
+      "name": "without_skill",
+      "pass_rate": 0.591,
+      "passed": 13,
+      "total": 22,
+      "mean_duration_seconds": 20.1,
+      "mean_total_tokens": 20049
+    }
+  ],
+  "delta": {
+    "pass_rate_delta": 0.318,
+    "duration_delta_seconds": 13.5,
+    "tokens_delta": 3801
+  },
+  "evals": [
+    {
+      "name": "trivial-tight",
+      "with_skill": {"pass_rate": 1.0, "passed": 3, "total": 3, "duration_s": 25.3, "tokens": 23402},
+      "without_skill": {"pass_rate": 0.333, "passed": 1, "total": 3, "duration_s": 18.5, "tokens": 19851}
+    },
+    {
+      "name": "bloated-design-doc-section",
+      "with_skill": {"pass_rate": 0.9, "passed": 9, "total": 10, "duration_s": 37.4, "tokens": 24180},
+      "without_skill": {"pass_rate": 0.6, "passed": 6, "total": 10, "duration_s": 17.8, "tokens": 20146}
+    },
+    {
+      "name": "generic-security-block",
+      "with_skill": {"pass_rate": 0.889, "passed": 8, "total": 9, "duration_s": 38.2, "tokens": 23969},
+      "without_skill": {"pass_rate": 0.667, "passed": 6, "total": 9, "duration_s": 24.0, "tokens": 20149}
+    }
+  ],
+  "analyst_notes": [
+    "The skill version produces a structured output (trimmed draft + numbered diff log + stats block) that the baseline never matches without prompting. The structural assertions (diff log, stats, em-dash check) account for most of the with-skill pass-rate advantage.",
+    "Both versions correctly preserved every technical specific across all three test cases. No regressions on accuracy.",
+    "The skill version correctly short-circuits on the trivial-tight case; the baseline cannot resist trimming even when no trim is needed. This is the strongest discriminating signal in the eval set.",
+    "Word-count floor assertions failed on eval-1 (148 vs 150-240 floor) and eval-2 (63 vs 100-180 floor). The skill cut deeper than the assertion was calibrated for. Audit confirms no technical content was lost in either case; the assertion floors are too tight for inputs that are >60% generic prose. Recalibrate floors in iteration 2 or accept that the skill's own 60% audit threshold is the right governor.",
+    "Time cost: with-skill runs are ~13s slower on average (~65% longer) because the skill walks 6 procedure steps. For a one-shot edit, that overhead is fine; for batch edits across a long doc, consider a lighter variant that skips Step 1 classification when invoked repeatedly in the same session.",
+    "Token cost: ~19% more tokens with the skill (mostly for the diff log and stats output). This is the cost the skill exists to pay."
+  ]
+}

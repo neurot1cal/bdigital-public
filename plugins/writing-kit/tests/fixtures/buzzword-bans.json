@@ -1,0 +1,47 @@
+{
+  "_meta": {
+    "version": "2026-05-23",
+    "purpose": "Canonical buzzword ban list shared by deslop-tech-comms and thermo-nuclear-writing-review. Both SKILL.md files must derive their ban tables from this source. The check.sh diff guards against drift.",
+    "carveout_rule": "Only ban these terms when no specific behavior is named alongside them. 'Robust red-teaming process with adversarial probes from 5 internal teams' is legitimate; 'we built a robust solution' is buzzword. Fire on the latter, pass the former.",
+    "brand_voice_override": "If a context/brand-voice.md or project CLAUDE.md voice section is in scope, suspend this ban table for marketing landing pages, sales copy, and advertising surfaces."
+  },
+  "bans": [
+    {"term": "leverage", "replacement": "use", "regex": "\\bleverage[sd]?\\b"},
+    {"term": "utilize", "replacement": "use", "regex": "\\butiliz(e|es|ed|ing|ation)\\b"},
+    {"term": "facilitate", "replacement": "run, set up, host", "regex": "\\bfacilitat(e|es|ed|ing)\\b"},
+    {"term": "spearheaded", "replacement": "led, ran", "regex": "\\bspearhead(ed|ing|s)?\\b"},
+    {"term": "robust", "replacement": "name what makes it robust (\"retries on 5xx\", \"idempotent\")", "regex": "\\brobust\\b", "carveout": "ONLY ban when no specific behavior is named in the same sentence."},
+    {"term": "seamless", "replacement": "name what makes it seamless (\"no manual steps\", \"single API call\")", "regex": "\\bseamless(ly)?\\b", "carveout": "ONLY ban when no specific user-visible property is named in the same sentence."},
+    {"term": "cutting-edge", "replacement": "name the specific capability and date it", "regex": "\\bcutting.edge\\b"},
+    {"term": "state-of-the-art", "replacement": "name the specific capability and date it", "regex": "\\bstate.of.the.art\\b"},
+    {"term": "premier", "replacement": "name the specific capability", "regex": "\\bpremier\\b"},
+    {"term": "synergy", "replacement": "name the specific interaction", "regex": "\\bsynerg(y|ies|istic|ize)\\b"},
+    {"term": "turnkey", "replacement": "name what someone has to do (or not do)", "regex": "\\bturnkey\\b"},
+    {"term": "elevate", "replacement": "improve, raise, lift", "regex": "\\belevat(e|es|ed|ing|ion)\\b"},
+    {"term": "solution", "replacement": "name the specific change", "regex": "\\bsolution\\b", "carveout": "Only ban generic standalone usage. Domain-specific compounds like 'aqueous solution' or 'CRM solution X' pass."},
+    {"term": "empower", "replacement": "enable, let, give X the ability to", "regex": "\\bempower(s|ed|ing|ment)?\\b"},
+    {"term": "paradigm shift", "replacement": "name the specific change", "regex": "\\bparadigm.shift\\b"},
+    {"term": "force multiplier", "replacement": "name the specific effect", "regex": "\\bforce.multiplier\\b"},
+    {"term": "holistic", "replacement": "name what's included", "regex": "\\bholistic(ally)?\\b"},
+    {"term": "ecosystem", "replacement": "name the specific set of components", "regex": "\\becosystem\\b", "carveout": "Software-ecosystem and biology-ecosystem usage pass; generic marketing usage ('our partner ecosystem') is the ban target."},
+    {"term": "unlock", "replacement": "enable, allow", "regex": "\\bunlock(s|ed|ing)?\\b", "carveout": "Literal lock-mechanism usage passes; metaphorical 'unlock value' is the ban target."},
+    {"term": "bleeding-edge", "replacement": "name the specific capability and the maturity risk", "regex": "\\bbleeding.edge\\b"}
+  ],
+  "cut_on_sight_phrases": [
+    {"phrase": "In today's fast-paced", "regex": "\\bin today.s fast.paced\\b"},
+    {"phrase": "As AI continues to reshape", "regex": "\\bas AI continues to reshape\\b"},
+    {"phrase": "It is widely known that", "regex": "\\bit is widely known that\\b"},
+    {"phrase": "In recent years", "regex": "\\bin recent years\\b"},
+    {"phrase": "Let me explain", "regex": "\\blet me explain\\b"},
+    {"phrase": "I'd like to start by", "regex": "\\bi.d like to start by\\b"},
+    {"phrase": "It's important to note that", "regex": "\\bit.s important to note that\\b"},
+    {"phrase": "Worth pointing out", "regex": "\\bworth pointing out\\b"},
+    {"phrase": "Why this matters", "regex": "\\bwhy this matters\\b"},
+    {"phrase": "What matters here", "regex": "\\bwhat matters here\\b"},
+    {"phrase": "Load-bearing", "regex": "\\bload.bearing\\b"},
+    {"phrase": "Great question", "regex": "\\bgreat question\\b"},
+    {"phrase": "Happy to help", "regex": "\\bhappy to help\\b"},
+    {"phrase": "Excellent point", "regex": "\\bexcellent point\\b"},
+    {"phrase": "Stay tuned", "regex": "\\bstay tuned\\b"}
+  ]
+}

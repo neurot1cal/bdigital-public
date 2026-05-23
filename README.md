@@ -23,7 +23,9 @@ bdigital-public/
 │   └── marketplace.json        # Makes this repo a Claude Code plugin marketplace
 ├── plugins/                    # Canonical: full plugin bundles (Claude Code marketplace)
 │   ├── session-handoff/        # Brief-generating skill for the /clear-then-resume workflow
-│   └── cc-context-monitor/     # Three-bar color-banded statusline: ctx / 5h / 7d
+│   ├── cc-context-monitor/     # Three-bar color-banded statusline: ctx / 5h / 7d
+│   ├── cursor-team-kit/        # Claude Code port of Cursor's team-kit (18 skills + 2 subagents)
+│   └── writing-kit/            # deslop-tech-comms + thermo-nuclear-writing-review for AI prose
 ├── skills/                     # Auto-generated mirrors for `npx openskills install`
 │   ├── session-handoff/        # → byte-identical to plugins/session-handoff/skills/session-handoff/
 │   └── cc-context-monitor/     # → byte-identical to plugins/cc-context-monitor/skills/cc-context-monitor/
@@ -64,6 +66,8 @@ standard.
 /plugin marketplace add neurot1cal/bdigital-public
 /plugin install session-handoff@bdigital-public
 /plugin install cc-context-monitor@bdigital-public
+/plugin install cursor-team-kit@bdigital-public
+/plugin install writing-kit@bdigital-public
 ```
 
 If your Claude Code build rejects the shorthand, use the full Git URL
@@ -73,6 +77,8 @@ its full install matrix, tools granted, and trust model:
 
 - [`plugins/session-handoff/README.md`](plugins/session-handoff/README.md)
 - [`plugins/cc-context-monitor/README.md`](plugins/cc-context-monitor/README.md)
+- [`plugins/cursor-team-kit/README.md`](plugins/cursor-team-kit/README.md)
+- [`plugins/writing-kit/README.md`](plugins/writing-kit/README.md)
 
 ## Current plugins
 
@@ -105,6 +111,34 @@ Install: `/plugin install cc-context-monitor@bdigital-public`. Source
 lives at
 [`plugins/cc-context-monitor/skills/cc-context-monitor/SKILL.md`](plugins/cc-context-monitor/skills/cc-context-monitor/SKILL.md)
 and [`plugins/cc-context-monitor/statusline.sh`](plugins/cc-context-monitor/statusline.sh).
+
+### `plugins/writing-kit/`
+
+Two skills for AI-drafted technical communication, designed as a pair: one prevents slop at draft time, the other audits a finished draft with no soft feedback.
+
+- **`deslop-tech-comms`** runs proactively while you draft. Triages audience, purpose, surface, and constraints; picks the right structure for the surface (Slack message vs design doc vs postmortem vs executive summary vs email vs status update); applies an anti-slop checklist at every paragraph break (banned buzzwords, no generic openers, no fabricated specifics, vary sentence length, no fragment clusters, no "The"-starter clusters); and does a final re-read pass for AI fingerprints before returning the draft.
+- **`thermo-nuclear-writing-review`** runs reactively on a finished draft. A prose parallel of Cursor's [`thermo-nuclear-code-quality-review`](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review): writing-judo moves that delete whole sections, length discipline (1,000-word section limit, genre-specific piece caps), prose-spaghetti detection, AI-fingerprint bans, antecedent and acronym cleanliness, and a strict `APPROVE` / `REVISE` / `MAJOR REVISION` verdict with a numbered action list when revision is required.
+
+The two skills share one vocabulary (same buzzword ban list, same surface-specific structures, same sentence-rhythm rules) so the draft-time and review-time passes don't fight each other. Inspired by Anthropic's `anthropics/skills` repo for the deslop pattern and Cursor's team-kit for the thermo-nuclear rubric.
+
+Install: `/plugin install writing-kit@bdigital-public`. Source lives at [`plugins/writing-kit/`](plugins/writing-kit/) with READMEs and skill files inside.
+
+### `plugins/cursor-team-kit/`
+
+Claude Code port of [Team Cursor's `cursor-team-kit`](https://github.com/cursor/plugins/tree/main/cursor-team-kit) — 18 skills and 2 subagents for CI loops, PR review, shipping, verification, CLI/UI control harnesses, code-quality audits, and weekly work summaries. Original work © 2026 Cursor (MIT). This port preserves Cursor's authorship, copyright, and license; every adapted file points back to the upstream source.
+
+Highlights:
+
+- `loop-on-ci`, `fix-ci`, `ci-watcher` (subagent) — CI monitoring + iterate-to-green loops on top of `gh pr checks`.
+- `review-and-ship`, `make-pr-easy-to-review`, `get-pr-comments`, `pr-review-canvas` — the PR lifecycle, including an interactive HTML walkthrough generator with annotated diffs and moved-code detection.
+- `verify-this` — falsifiable baseline/treatment evidence with `VERIFIED` / `NOT VERIFIED` / `INCONCLUSIVE` verdicts.
+- `control-cli`, `control-ui` — local tmux/PTY and Playwright/CDP harnesses for driving interactive CLIs and web/Electron UIs without external services.
+- `thermo-nuclear-code-quality-review` (skill + subagent) — an unusually strict maintainability rubric (code-judo moves, 1k-line rule, spaghetti detection, boundary cleanliness).
+- `what-did-i-get-done`, `weekly-review`, `workflow-from-chats` — work-summary and preference-mining utilities.
+
+Adaptations from cursor primitives → Claude Code primitives (frontmatter, subagent invocation, tool references, rule-fragment handling) are documented in [`plugins/cursor-team-kit/PORTING-NOTES.md`](plugins/cursor-team-kit/PORTING-NOTES.md).
+
+Install: `/plugin install cursor-team-kit@bdigital-public`. Source lives at [`plugins/cursor-team-kit/`](plugins/cursor-team-kit/) and the README at [`plugins/cursor-team-kit/README.md`](plugins/cursor-team-kit/README.md).
 
 ## Current samples
 

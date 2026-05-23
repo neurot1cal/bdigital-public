@@ -1,0 +1,21 @@
+{
+  "fixture": "02-fabricated-metrics",
+  "surface": "postmortem-summary",
+  "must_not_contain_in_expected": [
+    "robust",
+    "facilitate",
+    "leverage",
+    "elevate",
+    "tirelessly",
+    "approximately 30%",
+    "around 45 minutes",
+    "over 90%"
+  ],
+  "must_contain_in_expected": [
+    "$IMPACT_PCT",
+    "$START_TS",
+    "$RESOLVE_TS",
+    "placeholder"
+  ],
+  "no_fabricated_metrics_rule": "Every percentage and time duration in the expected output must either be a placeholder ($VAR) OR be traceable to a source within the same sentence."
+}
