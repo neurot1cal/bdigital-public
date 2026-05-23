@@ -4,8 +4,16 @@ Public code samples that accompany the bdigital media engineering blog.
 Examples are extracted from real projects, generalized, and reduced to the
 minimum shape needed to be useful without shipping proprietary context.
 
-This repo doubles as a Claude Code plugin marketplace: skills ship twice —
-once under `samples/` for reading and once under `plugins/` for installing.
+This repo doubles as a Claude Code plugin marketplace AND an
+[openskills](https://github.com/numman-ali/openskills)-compatible source
+of agent skills. Every skill ships at two paths:
+
+- `plugins/<plugin>/skills/<skill>/SKILL.md` — canonical, where authors edit
+- `skills/<skill>/SKILL.md` — repo-root mirror, byte-identical, what `npx openskills install` discovers
+
+Both paths are kept in lockstep by `scripts/sync-skills.mjs`, gated by the
+`skills-sync-check` CI workflow. The `samples/` directory is a separate
+read-the-source view used by blog posts and eval infrastructure.
 
 ## What lives here
 
@@ -13,13 +21,17 @@ once under `samples/` for reading and once under `plugins/` for installing.
 bdigital-public/
 ├── .claude-plugin/
 │   └── marketplace.json        # Makes this repo a Claude Code plugin marketplace
-├── plugins/                    # Installable plugins (one-command install via /plugin)
+├── plugins/                    # Canonical: full plugin bundles (Claude Code marketplace)
 │   ├── session-handoff/        # Brief-generating skill for the /clear-then-resume workflow
 │   └── cc-context-monitor/     # Three-bar color-banded statusline: ctx / 5h / 7d
-├── samples/                    # Read-the-source versions (copy into your own repo)
+├── skills/                     # Auto-generated mirrors for `npx openskills install`
+│   ├── session-handoff/        # → byte-identical to plugins/session-handoff/skills/session-handoff/
+│   └── cc-context-monitor/     # → byte-identical to plugins/cc-context-monitor/skills/cc-context-monitor/
+├── samples/                    # Hand-maintained read-the-source views (tests + evals + blog mirroring)
 │   ├── pr-review/              # Claude-skills-based automated PR review + eval runner
-│   ├── session-handoff/        # Same skill as plugins/session-handoff, with tests + evals
-│   └── cc-context-monitor/     # Same plugin as plugins/cc-context-monitor, with tests + evals
+│   ├── session-handoff/        # Same skill + tests + scenario fixtures
+│   └── cc-context-monitor/     # Same plugin + tests + evals
+├── scripts/                    # sync-skills.mjs (regenerates skills/ from plugins/)
 ├── site/                       # Astro landing page (Cloudflare Workers)
 └── .github/                    # Open-source workflows, templates, ownership
 ```
@@ -28,9 +40,25 @@ bdigital-public/
 readers who want to install and use. Both coexist so you can pick whichever
 matches your intent — and blog posts can link to either.
 
-## Install a plugin
+## Install a skill or plugin
 
-This repo is itself a Claude Code plugin marketplace. Inside Claude Code:
+### Preferred — `npx openskills install` (cross-agent: Claude Code, Cursor, Windsurf, Aider, Codex)
+
+```bash
+# Install all skills from this repo
+npx openskills install neurot1cal/bdigital-public
+
+# Or pick a specific one
+npx openskills install neurot1cal/bdigital-public --skill session-handoff
+```
+
+This works because the repo ships every skill at the openskills-discoverable
+path `/skills/<name>/SKILL.md`. See
+[openskills](https://github.com/numman-ali/openskills) for the full CLI
+reference. The repo's [`CLAUDE.md`](./CLAUDE.md) documents the layout
+standard.
+
+### Alternative — Claude Code marketplace (full plugin bundle: LICENSE + plugin.json + agents)
 
 ```
 /plugin marketplace add neurot1cal/bdigital-public
