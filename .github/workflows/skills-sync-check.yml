@@ -1,0 +1,42 @@
+name: Skills sync check (openskills compat)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'plugins/**/skills/**'
+      - 'skills/**'
+      - 'scripts/sync-skills.mjs'
+      - '.claude-plugin/marketplace.json'
+      - '.github/workflows/skills-sync-check.yml'
+
+concurrency:
+  group: skills-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: skills/ matches plugins/<plugin>/skills/
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run sync check
+        run: node scripts/sync-skills.mjs --check
+
+      - name: Helpful hint on drift
+        if: failure()
+        run: |
+          echo "::error::skills/ is out of sync with plugins/<plugin>/skills/."
+          echo "::error::Run locally:  node scripts/sync-skills.mjs"
+          echo "::error::Then commit the regenerated skills/ tree."
