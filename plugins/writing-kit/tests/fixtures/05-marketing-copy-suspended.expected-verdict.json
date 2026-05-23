@@ -1,0 +1,22 @@
+{
+  "fixture": "05-marketing-copy-suspended",
+  "skill": "thermo-nuclear-writing-review",
+  "surface": "marketing-landing-page",
+  "expected_behavior": "buzzword_ban_suspended",
+  "expected_verdict": "REVISE",
+  "rationale": "Marketing surface — buzzword ban suspended per the edge-case rule. Structural rules still apply. Findings should focus on: (1) unsourced superlatives ('built for shipping at scale' — at what scale? what's the proof?), (2) no concrete capability named (the copy promises 'reasoning capabilities' without naming what they do), (3) generic 'free trial' CTA without telling the reader what happens next. Buzzwords pass with a note.",
+  "must_note_in_output": [
+    "Buzzword bans suspended for this surface (marketing landing).",
+    "Structural rules still apply."
+  ],
+  "must_not_flag_in_output": [
+    "leverage",
+    "robust",
+    "seamless",
+    "state-of-the-art",
+    "empower",
+    "elevate",
+    "ecosystem",
+    "cutting-edge"
+  ]
+}

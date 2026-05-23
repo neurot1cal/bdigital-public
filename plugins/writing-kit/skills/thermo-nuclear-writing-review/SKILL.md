@@ -1,14 +1,21 @@
 ---
 name: thermo-nuclear-writing-review
-description: Run an extremely strict prose review for structure, voice, and clarity of finished technical communication — design docs, RFCs, ADRs, blog posts, executive summaries, postmortems, README files, Slack thread retrospectives, customer-facing emails, or any AI-drafted writing that needs an unforgiving audit before it ships. Use for a thermo-nuclear writing review, thermonuclear prose review, deep writing audit, especially harsh editorial pass, or "tear this draft apart". Parallels `thermo-nuclear-code-quality-review` but applies its discipline to prose: writing-judo moves that delete whole sections, length-discipline limits, prose-spaghetti detection, AI-fingerprint and buzzword bans, voice consistency, and a final APPROVE / REVISE / MAJOR REVISION verdict.
+description: Run an extremely strict prose review for structure, voice, and clarity of finished technical communication — design docs, RFCs, ADRs, blog posts, executive summaries, postmortems, README files, Slack thread retrospectives, customer-facing emails, or any AI-drafted writing that needs an unforgiving audit before it ships. Use for a thermo-nuclear writing review, thermonuclear prose review, deep writing audit, especially harsh editorial pass, or "tear this draft apart". Parallels `thermo-nuclear-code-quality-review` but applies its discipline to prose: delete-not-polish structural cuts, length-discipline limits, prose-spaghetti detection, averaging-artifact and buzzword bans, voice consistency, and a final APPROVE / REVISE / MAJOR REVISION verdict.
 user-invocable: true
+allowed-tools: Read
 ---
 
 # Thermo-Nuclear Writing Review
 
-Use this skill for an unusually strict review of finished technical communication, focused on structure, voice, clarity, and the absence of AI fingerprints. This is the prose parallel of [`thermo-nuclear-code-quality-review`](https://github.com/cursor/plugins/tree/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review): same demanding tone, same priority ordering, same "ambitious about structural simplification" stance — but for prose.
+Use this skill for an unusually strict review of finished technical communication, focused on structure, voice, clarity, and the absence of averaging artifacts. This is the prose parallel of Cursor's `thermo-nuclear-code-quality-review`: same demanding tone, same priority ordering, same "ambitious about structural simplification" stance — but for prose.
 
-Above all, this skill should push the reviewer to be **ambitious about prose structure**. Do not merely identify local wording opportunities. Actively search for "writing-judo" moves: deletions and restructurings that preserve the argument while making the draft dramatically shorter, more direct, and harder to misread.
+Above all, this skill should push the reviewer to be **ambitious about prose structure**. Do not merely identify local wording opportunities. Actively search for **delete-not-polish moves**: deletions and restructurings that preserve the argument while making the draft dramatically shorter, more direct, and harder to misread.
+
+## Why these patterns exist (mechanism, not symptom)
+
+AI-drafted prose averages over training data. The output that ranks highest under RLHF-style training rewards generic-fluent text: sentences that don't commit, the "three reasons, one solution" symmetric framing, uniform sentence length, buzzword density. These are not AI laziness; they are predictable artifacts of an averaging process trained to satisfy the median reader. Knowing the mechanism keeps the rules durable: even when a future model produces none of the specific surface artifacts named here, the same averaging pressure will produce successor patterns the rubric still catches via its structural and specificity checks.
+
+The rules below name surface symptoms (the 2026-era artifacts), but the underlying mechanism is the target.
 
 ## When to invoke
 
@@ -32,9 +39,9 @@ Apply the baseline prompt above, plus these explicit review rules.
 ### 0. Be ambitious about structural simplification
 
 - Do not stop at "this could be a bit cleaner."
-- Look for opportunities to **delete entire sections, paragraphs, or argumentative branches** without losing the load-bearing claims.
+- Look for opportunities to **delete entire sections, paragraphs, or argumentative branches** without losing the central claims.
 - Prefer the draft that makes the argument feel inevitable in hindsight.
-- Assume there is often a "writing-judo" move available: a reframing that lets the author drop two of three rebuttals, or collapse three half-overlapping examples into one strong one.
+- Assume there is often a **delete-not-polish move** available: a reframing that lets the author drop two of three rebuttals, or collapse three half-overlapping examples into one strong one.
 - If you see a path to delete prose rather than rearrange it, push hard for that path.
 
 ### 1. Length discipline — the 1,000-word rule
@@ -100,6 +107,10 @@ These are the patterns that mark a draft as AI-flavored regardless of the underl
 
 ### Buzzword bans
 
+> **⚠ Carveout rule: ONLY ban these terms when no specific behavior is named alongside them.** "Robust red-teaming process with adversarial probes from 5 internal teams" is legitimate Anthropic-safety-team prose. "We built a robust solution" is buzzword. Fire on the latter; pass the former.
+>
+> *Buzzword ban list version: 2026-05-23. Date this comment when the list is updated so downstream users can diff what changed.*
+
 These should not appear in shipped technical prose without a very specific justification:
 
 leverage, utilize, facilitate, spearheaded, robust (without a specific behavior), seamless (without a specific user-visible property), cutting-edge, state-of-the-art, premier, elevate, synergy, turnkey, solution (as a generic noun), empower, paradigm shift, force multiplier, holistic, ecosystem (outside actual software-ecosystem contexts), unlock (as a verb for plain enablement), bleeding-edge.
@@ -137,7 +148,7 @@ A made-up specific is worse than no specific because it makes the writing look b
 
 For every meaningful section, ask:
 
-- Is there a "writing-judo" move that would let me delete this section entirely?
+- Is there a **delete-not-polish move** that would let me delete this section entirely?
 - Can this argument be reframed so two of three points become unnecessary?
 - Does this paragraph make the piece more or less reader-friendly?
 - Did the draft add three hedges where one strong claim would land?
@@ -207,7 +218,7 @@ Good phrases:
 - `this section seems unnecessary. can we just delete it and let the proposal stand?`
 - `why do we need three examples of the same pattern? can we pick the strongest one and drop the others?`
 - `this looks like a bespoke transition for something the rest of the piece already has a pattern for. can we reuse the canonical opener?`
-- `i think there's a writing-judo move here that makes this section much shorter. can we reframe the argument so these qualifiers disappear?`
+- `i think there's a delete-not-polish move here that makes this section much shorter. can we reframe the argument so these qualifiers disappear?`
 - `this rewrite moves prose around but doesn't really delete it. is there a way to make the argument itself simpler?`
 
 ## Output expectations
@@ -241,7 +252,7 @@ The bar for approval is:
 
 Treat these as presumptive blockers unless the author can justify them clearly:
 
-- the draft preserves a lot of dead prose when a plausible writing-judo move would delete it
+- the draft preserves a lot of dead prose when a plausible delete-not-polish move would delete it
 - the draft contains a section over 1,000 words without an explicit reason
 - the draft adds hedges or qualifiers that make a clean claim murky
 - the draft solves a local concern by scattering caveats across the piece
@@ -261,17 +272,32 @@ Every review ends with exactly one verdict:
 
 A `REVISE` or `MAJOR REVISION` verdict must include a numbered action list with the specific changes required.
 
+## Determinism and edge cases
+
+**Temperature.** Run this skill at temperature 0 whenever possible. The verdict is a judgment call; with temperature greater than 0, two runs on the same draft can disagree.
+
+**Tie-breaker.** If you cannot confidently choose between two verdicts (REVISE vs APPROVE, or MAJOR REVISION vs REVISE), default to the stricter verdict and state the tie explicitly: `Verdict: REVISE (tied with APPROVE; defaulting to stricter)`. Do not invent additional findings to justify the stricter call.
+
+**Edge cases — handle these explicitly, do not apply defaults blindly:**
+
+- **Already tight prose.** Output `APPROVE` immediately. Do not invent findings to justify a longer review. State "no structural issues found" in one sentence and stop.
+- **Intentional buzzwords.** Marketing copy, brand-voice landing pages, sales pages, and any draft where the user explicitly invokes a brand voice file may legitimately need the banned terms. When you detect this surface, suspend the buzzword ban table and note: "Buzzword bans suspended for this surface. Structural rules still apply."
+- **Non-English prose.** These rules are English-idiom-shaped. Refuse the review with: "This rubric targets English-language prose. The rhythm and idiom rules will not generalize. Recommend a language-specific review instead." Do not apply English buzzword bans to other languages.
+
 ## Output shape
 
 ```
 VERDICT: APPROVE | REVISE | MAJOR REVISION
+
+What's salvageable (skip on clean APPROVE):
+<one sentence naming what's working — the core argument, the structure of a specific section, the data behind the claims. Not a softener; a map so the author knows where to anchor the rewrite.>
 
 Top findings (priority-ordered):
 1. <structural issue, specific paragraph or section reference, suggested move>
 2. <next priority issue>
 3. <continued; aim for 3–8 high-conviction items, not 30 nits>
 
-Voice / AI-fingerprint scan:
+Voice / averaging-artifact scan:
 - <list specific phrases that fired against the cut-on-sight list, with line/section references>
 - <list buzzwords that fired, with replacement suggestions>
 
@@ -279,7 +305,7 @@ Length and structure:
 - <section-word-count callouts if any section exceeds 1k words>
 - <piece-length callout if applicable>
 
-Specific cuts proposed (writing-judo):
+Specific cuts proposed (delete-not-polish):
 - <whole-section or whole-paragraph deletes proposed, with justification>
 
 Action list (only on REVISE or MAJOR REVISION):

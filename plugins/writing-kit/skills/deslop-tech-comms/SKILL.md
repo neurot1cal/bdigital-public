@@ -7,7 +7,29 @@ allowed-tools: Read, Write, Edit
 
 # Deslop Technical Communications
 
-Produce technical communication that does not read like AI slop. This skill applies at **draft time** — it shapes what the model writes, before any reviewer sees it. The companion [`thermo-nuclear-writing-review`](../thermo-nuclear-writing-review/SKILL.md) does the strict critique after the fact.
+Produce technical communication that does not read like generic AI prose. This skill applies at **draft time** — it shapes what the model writes, before any reviewer sees it. The companion [`thermo-nuclear-writing-review`](../thermo-nuclear-writing-review/SKILL.md) does the strict critique after the fact.
+
+## Quick start (status update example)
+
+Sloppy AI-drafted Slack update:
+
+> Hey team! In today's fast-paced AI landscape, I wanted to leverage this opportunity to share that we've been working hard to facilitate a robust deployment of our new feature. The team has done amazing work and we're seeing some really exciting numbers (around 30% improvement!). Stay tuned!
+
+After this skill:
+
+> Deployed the new caching layer this morning. p95 dropped from 540ms to 380ms (per the dashboard at $URL). Watching memory through end of day.
+
+Audit log this skill returns:
+
+- Cut "In today's fast-paced AI landscape" generic opener
+- Replaced "leverage / facilitate / robust" with concrete verbs
+- Replaced unsourced "around 30% improvement" with the actual numbers from the dashboard
+- Cut "Stay tuned" + exclamation point
+- 78 words → 30 words
+
+## Why AI prose has predictable patterns (mechanism, not symptom)
+
+AI-drafted prose averages over training data. Output that ranks highest under RLHF-style training rewards generic-fluent text: sentences that don't commit, the "three reasons, one solution" symmetric framing, uniform sentence length, buzzword density. These are not AI laziness; they are predictable artifacts of an averaging process trained to satisfy the median reader. Even if a future model sands off the specific surface fingerprints listed below, the same averaging pressure will produce successor patterns. The structural rules (audience triage, surface-specific scaffolds, specificity over abstraction) target the underlying mechanism and stay durable.
 
 ## When to invoke
 
@@ -16,13 +38,13 @@ Produce technical communication that does not read like AI slop. This skill appl
 - Composing an email or external comms (vendor outreach, customer update, internal announcement).
 - Summarizing a meeting, an investigation, or a long thread.
 - Producing a status update or weekly recap.
-- Polishing an existing AI draft that reads like slop.
+- Polishing an existing AI draft that reads generic.
 
 Do **not** invoke this for code, code comments, or conversational chat.
 
 ## The technique in one paragraph
 
-AI slop in technical communication has predictable fingerprints: generic openings ("In today's fast-paced world..."), buzzword density ("leverage", "synergy", "robust", "cutting-edge"), fabricated specifics (made-up numbers, invented citations), uniform sentence length, the "N reasons, one solution" symmetric framing, and a default 4-paragraph essay structure regardless of surface. The fix is **proactive structural commitment before generation**: pin audience, purpose, surface, and constraints up front; pick the format the surface actually needs; then write with a specific anti-slop checklist that runs at every paragraph break.
+The fix is **proactive structural commitment before generation**: pin audience, purpose, surface, and constraints up front; pick the format the surface actually needs; then write with a specific anti-pattern checklist that runs at every paragraph break.
 
 ## Step 1 — Triage (always run first)
 
@@ -97,9 +119,9 @@ Order: **Summary → Impact → Timeline → Root cause → What worked / what d
 - "In progress" includes ETA and current confidence.
 - "Blocked" names the blocker and the person who can unblock it.
 
-## Step 3 — Anti-slop checklist (apply at every paragraph break)
+## Step 3 — Averaging-artifact checklist (apply at every paragraph break)
 
-These are the AI fingerprints that signal slop. Catch them at draft time, not in review.
+These are the surface patterns produced by average-seeking generation. Catch them at draft time, not in review.
 
 ### Cut on sight
 
@@ -112,6 +134,12 @@ These are the AI fingerprints that signal slop. Catch them at draft time, not in
 - **Chatbot enthusiasm**: "Great question!", "Happy to help!", "Excellent point!". Treat the reader as a peer.
 
 ### Buzzword bans
+
+> **⚠ Carveout rule: ONLY ban these terms when no specific behavior is named alongside them.** "Robust red-teaming process with adversarial probes from 5 internal teams" is legitimate safety-team prose. "We built a robust solution" is buzzword. Fire on the latter; pass the former.
+>
+> **Brand-voice override.** If the user has a brand voice file (`context/brand-voice.md`) or a project `CLAUDE.md` voice section, read it first; some surfaces (marketing landing pages, sales copy, advertising) legitimately use these terms. Suspend the ban table for those surfaces and note that you did.
+>
+> *Buzzword ban list version: 2026-05-23. Date this comment when the list is updated so downstream users can diff what changed.*
 
 | Avoid | Use instead |
 |---|---|
@@ -127,6 +155,12 @@ These are the AI fingerprints that signal slop. Catch them at draft time, not in
 | elevate | improve, raise, lift |
 | solution | name the specific change |
 | empower | enable, let, give X the ability to |
+| paradigm shift | name the specific change |
+| force multiplier | name the specific effect |
+| holistic | name what's included |
+| ecosystem | name the specific set of components (passes for actual software-ecosystem usage) |
+| unlock | enable, allow (passes for literal lock-mechanism usage) |
+| bleeding-edge | name the specific capability and the maturity risk |
 
 ### Specificity rules
 

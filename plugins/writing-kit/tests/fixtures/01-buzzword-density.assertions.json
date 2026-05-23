@@ -1,0 +1,30 @@
+{
+  "fixture": "01-buzzword-density",
+  "surface": "slack-status-update",
+  "input_word_count": 65,
+  "expected_word_count_max": 50,
+  "must_not_contain_in_expected": [
+    "leverage",
+    "facilitate",
+    "robust",
+    "empower",
+    "cutting-edge",
+    "solution",
+    "In today's",
+    "Stay tuned",
+    "amazing",
+    "really exciting"
+  ],
+  "must_contain_in_expected": [
+    "p95",
+    "540ms",
+    "380ms",
+    "$URL"
+  ],
+  "must_not_contain_unsourced_metrics": true,
+  "expected_audit_log_includes": [
+    "Cut generic opener",
+    "Replaced leverage / facilitate / robust",
+    "Replaced unsourced metric"
+  ]
+}
