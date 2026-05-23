@@ -1,0 +1,42 @@
+name: README sync check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'README.md'
+      - '.claude-plugin/marketplace.json'
+      - 'scripts/sync-readme.mjs'
+      - '.github/workflows/readme-sync-check.yml'
+
+concurrency:
+  group: readme-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: README.md matches marketplace.json
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run sync check
+        run: node scripts/sync-readme.mjs --check
+
+      - name: Helpful hint on drift
+        if: failure()
+        run: |
+          echo "::error::README.md is out of sync with .claude-plugin/marketplace.json."
+          echo "::error::Run locally:  node scripts/sync-readme.mjs"
+          echo "::error::Then commit the regenerated README.md."
+          echo "::error::Tip: enable the auto-regen hook with  git config core.hooksPath .githooks"

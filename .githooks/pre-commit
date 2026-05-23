@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Regenerate marketplace-derived artifacts before every commit so they never
+# drift from .claude-plugin/marketplace.json:
+#   - skills/            (repo-root openskills mirror)  via scripts/sync-skills.mjs
+#   - README.md regions  (plugins table, install block, tree, doc links)
+#                        via scripts/sync-readme.mjs
+#
+# Install once per clone:
+#   git config core.hooksPath .githooks
+#
+# This is why the README and skills mirror stopped needing manual edits (and
+# stopped re-conflicting on every plugin-adding PR). CI re-checks both in
+# --check mode, so a clone without the hook still cannot merge stale artifacts.
+
+set -e
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "pre-commit: node not found — skipping artifact regeneration" >&2
+  exit 0
+fi
+
+REPO="$(git rev-parse --show-toplevel)"
+cd "$REPO"
+
+node scripts/sync-skills.mjs >/dev/null
+node scripts/sync-readme.mjs >/dev/null
+
+# Stage only the generated artifacts (never `git add -A`).
+git add skills README.md
