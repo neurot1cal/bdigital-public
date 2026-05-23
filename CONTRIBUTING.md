@@ -134,6 +134,14 @@ are a publication contract, not a staging area for experiments.
    plugins vendored in this repo — the source gets resolved relative to a
    git-tracked marketplace checkout, so mutation is gated by a PR here.
 
+   The root `README.md` plugin table, install block, directory tree, and
+   doc-link list are **generated from this manifest** by
+   `scripts/sync-readme.mjs` (gated by the `readme-sync-check` CI job). Do not
+   hand-edit those regions — run `node scripts/sync-readme.mjs` (or enable the
+   pre-commit hook with `git config core.hooksPath .githooks`) and commit the
+   result. Hand-write only the `### \`plugins/<name>/\`` prose section under
+   "Current plugins".
+
    **External plugins MUST pin a SHA.** Any marketplace entry whose
    `source` is an external git URL must use the object form with both
    `url` and `sha`:
@@ -176,6 +184,8 @@ are a publication contract, not a staging area for experiments.
 6. **Verification.** Before opening the PR, confirm:
    - `python3 -m json.tool` passes on both `.claude-plugin/marketplace.json`
      and `plugins/<name>/.claude-plugin/plugin.json`.
+   - `node scripts/sync-readme.mjs --check` and
+     `node scripts/sync-skills.mjs --check` both exit 0.
    - The plugin's structural test suite (if it has one) passes.
    - `/plugin marketplace add /path/to/your/fork` and `/plugin install
      <name>@bdigital-public` work end-to-end from a clean Claude Code

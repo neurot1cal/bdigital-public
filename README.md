@@ -1,5 +1,10 @@
 # bdigital-public
 
+[![CI](https://github.com/neurot1cal/bdigital-public/actions/workflows/ci.yml/badge.svg)](https://github.com/neurot1cal/bdigital-public/actions/workflows/ci.yml)
+[![Skills sync](https://github.com/neurot1cal/bdigital-public/actions/workflows/skills-sync-check.yml/badge.svg)](https://github.com/neurot1cal/bdigital-public/actions/workflows/skills-sync-check.yml)
+[![README sync](https://github.com/neurot1cal/bdigital-public/actions/workflows/readme-sync-check.yml/badge.svg)](https://github.com/neurot1cal/bdigital-public/actions/workflows/readme-sync-check.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Public code samples that accompany the bdigital media engineering blog.
 Examples are extracted from real projects, generalized, and reduced to the
 minimum shape needed to be useful without shipping proprietary context.
@@ -15,28 +20,57 @@ Both paths are kept in lockstep by `scripts/sync-skills.mjs`, gated by the
 `skills-sync-check` CI workflow. The `samples/` directory is a separate
 read-the-source view used by blog posts and eval infrastructure.
 
+## Contents
+
+- [Plugins](#plugins)
+- [What lives here](#what-lives-here)
+- [Install a skill or plugin](#install-a-skill-or-plugin)
+- [Current plugins](#current-plugins)
+- [Current samples](#current-samples)
+- [The landing page](#the-landing-page)
+- [Trust model for external plugins](#trust-model-for-external-plugins)
+- [Contributing](#contributing)
+- [Related reading](#related-reading)
+
+## Plugins
+
+Every row below is generated from [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)
+by [`scripts/sync-readme.mjs`](scripts/sync-readme.mjs). Do not edit the table by hand.
+
+<!-- AUTOGEN:plugins-table -->
+| Plugin | Category | Install | Docs |
+|--------|----------|---------|------|
+| `session-handoff` | productivity | `/plugin install session-handoff@bdigital-public` | [README](plugins/session-handoff/README.md) |
+| `cc-context-monitor` | productivity | `/plugin install cc-context-monitor@bdigital-public` | [README](plugins/cc-context-monitor/README.md) |
+| `condense-tech-writing` | productivity | `/plugin install condense-tech-writing@bdigital-public` | [README](plugins/condense-tech-writing/README.md) |
+| `cursor-team-kit` | developer-tools | `/plugin install cursor-team-kit@bdigital-public` | [README](plugins/cursor-team-kit/README.md) |
+| `writing-kit` | writing | `/plugin install writing-kit@bdigital-public` | [README](plugins/writing-kit/README.md) |
+<!-- /AUTOGEN:plugins-table -->
+
 ## What lives here
 
+<!-- AUTOGEN:tree -->
 ```
 bdigital-public/
 ├── .claude-plugin/
 │   └── marketplace.json        # Makes this repo a Claude Code plugin marketplace
 ├── plugins/                    # Canonical: full plugin bundles (Claude Code marketplace)
-│   ├── session-handoff/        # Brief-generating skill for the /clear-then-resume workflow
-│   ├── cc-context-monitor/     # Three-bar color-banded statusline: ctx / 5h / 7d
-│   ├── cursor-team-kit/        # Claude Code port of Cursor's team-kit (18 skills + 2 subagents)
-│   └── writing-kit/            # deslop-tech-comms + thermo-nuclear-writing-review for AI prose
+│   ├── session-handoff/        # productivity
+│   ├── cc-context-monitor/     # productivity
+│   ├── condense-tech-writing/  # productivity
+│   ├── cursor-team-kit/        # developer-tools
+│   └── writing-kit/            # writing
 ├── skills/                     # Auto-generated mirrors for `npx openskills install`
-│   ├── session-handoff/        # → byte-identical to plugins/session-handoff/skills/session-handoff/
-│   └── cc-context-monitor/     # → byte-identical to plugins/cc-context-monitor/skills/cc-context-monitor/
+│   └── (23 skill mirrors, one per skill, byte-identical to plugins/<plugin>/skills/<skill>/)
 ├── samples/                    # Hand-maintained read-the-source views (tests + evals + blog mirroring)
 │   ├── pr-review/              # Claude-skills-based automated PR review + eval runner
 │   ├── session-handoff/        # Same skill + tests + scenario fixtures
 │   └── cc-context-monitor/     # Same plugin + tests + evals
-├── scripts/                    # sync-skills.mjs (regenerates skills/ from plugins/)
+├── scripts/                    # sync-skills.mjs (skills/) + sync-readme.mjs (this README)
 ├── site/                       # Astro landing page (Cloudflare Workers)
 └── .github/                    # Open-source workflows, templates, ownership
 ```
+<!-- /AUTOGEN:tree -->
 
 `samples/` is for readers who want to study or copy code; `plugins/` is for
 readers who want to install and use. Both coexist so you can pick whichever
@@ -62,23 +96,29 @@ standard.
 
 ### Alternative — Claude Code marketplace (full plugin bundle: LICENSE + plugin.json + agents)
 
+<!-- AUTOGEN:install-block -->
 ```
 /plugin marketplace add neurot1cal/bdigital-public
 /plugin install session-handoff@bdigital-public
 /plugin install cc-context-monitor@bdigital-public
+/plugin install condense-tech-writing@bdigital-public
 /plugin install cursor-team-kit@bdigital-public
 /plugin install writing-kit@bdigital-public
 ```
+<!-- /AUTOGEN:install-block -->
 
 If your Claude Code build rejects the shorthand, use the full Git URL
 (`https://github.com/neurot1cal/bdigital-public.git`) or a local-path
 pointing at a checkout of this repo. Each plugin's own README documents
 its full install matrix, tools granted, and trust model:
 
+<!-- AUTOGEN:plugin-docs -->
 - [`plugins/session-handoff/README.md`](plugins/session-handoff/README.md)
 - [`plugins/cc-context-monitor/README.md`](plugins/cc-context-monitor/README.md)
+- [`plugins/condense-tech-writing/README.md`](plugins/condense-tech-writing/README.md)
 - [`plugins/cursor-team-kit/README.md`](plugins/cursor-team-kit/README.md)
 - [`plugins/writing-kit/README.md`](plugins/writing-kit/README.md)
+<!-- /AUTOGEN:plugin-docs -->
 
 ## Current plugins
 

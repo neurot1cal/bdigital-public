@@ -87,12 +87,46 @@ allowed-tools: Read, Write, Edit, Bash  # only what the skill actually needs
   plugin's `thermo-nuclear-writing-review` is the canonical reference for
   the full ban list.
 
+## The root README is generated, not hand-edited
+
+The plugin-derived regions of the root `README.md` are generated from
+`.claude-plugin/marketplace.json` by `scripts/sync-readme.mjs`. Four regions,
+each delimited by `<!-- AUTOGEN:<name> -->` / `<!-- /AUTOGEN:<name> -->`
+markers, regenerate from the manifest:
+
+- `plugins-table` — the `## Plugins` overview table
+- `install-block` — the `/plugin install …@bdigital-public` command block
+- `tree` — the `plugins/` and `skills/` lines in the "What lives here" tree
+- `plugin-docs` — the per-plugin README link list
+
+**Never hand-edit inside those markers.** Edit `marketplace.json` and run
+`node scripts/sync-readme.mjs`. Everything outside the markers (intro,
+"Current plugins" prose, samples, trust model) is hand-written and untouched
+by the generator. This is why adding a plugin no longer re-conflicts the
+README on every PR.
+
+`--check` mode (`node scripts/sync-readme.mjs --check`) gates CI via
+`.github/workflows/readme-sync-check.yml`. The script also emits non-fatal
+warnings for any marketplace plugin missing a `plugin.json`, a `LICENSE`, or a
+`### \`plugins/<name>/\`` prose section — published-but-incomplete plugins.
+
+## Auto-regen hook (one-time per clone)
+
+```
+git config core.hooksPath .githooks
+```
+
+`.githooks/pre-commit` regenerates `skills/` and the README regions and stages
+them on every commit, so the two CI sync checks can never block you. The hook
+is optional (CI is the real gate) but removes the manual regen step.
+
 ## Pre-commit checklist
 
-Before opening a PR that adds or modifies a skill:
+Before opening a PR that adds or modifies a skill or plugin:
 
 - [ ] `node scripts/sync-skills.mjs` ran without errors
 - [ ] `node scripts/sync-skills.mjs --check` exits 0
+- [ ] `node scripts/sync-readme.mjs --check` exits 0 (or let the pre-commit hook do it)
 - [ ] `.claude-plugin/plugin.json` is valid JSON (`python3 -c "import json; json.load(open(...))"`)
 - [ ] Plugin LICENSE is present and reachable
 - [ ] Marketplace entry name matches plugin.json name
