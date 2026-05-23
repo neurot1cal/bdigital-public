@@ -35,6 +35,13 @@
       "category": "developer-tools",
       "source": "./plugins/cursor-team-kit",
       "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/cursor-team-kit"
+    },
+    {
+      "name": "writing-kit",
+      "description": "Two skills for AI-drafted technical communication: deslop-tech-comms (proactive draft-time: audience triage, surface-specific structure, anti-slop checklist for docs, summaries, Slack posts, emails, status updates) and thermo-nuclear-writing-review (reactive review-time: strict prose audit parallel to thermo-nuclear-code-quality-review, with writing-judo moves, length discipline, prose-spaghetti detection, AI-fingerprint and buzzword bans, APPROVE/REVISE/MAJOR REVISION verdict). The pair shares one vocabulary so draft-time and review-time passes don't fight each other.",
+      "category": "writing",
+      "source": "./plugins/writing-kit",
+      "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/writing-kit"
     }
   ]
 }

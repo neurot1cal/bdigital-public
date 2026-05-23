@@ -1,0 +1,16 @@
+{
+  "fixture": "04-sloppy-draft-revise",
+  "skill": "thermo-nuclear-writing-review",
+  "expected_verdict": "MAJOR REVISION",
+  "rationale": "Multiple structural and stylistic issues: (1) two sections titled 'Why this matters' — duplicates the banned 'matters' framing AND repeats a thesis; (2) buzzword density extreme (leverage, cutting-edge, elevate, load-bearing, facilitate, robust, empowered, state-of-the-art, solution, seamless, ecosystem, synergize, holistic, paradigm shift, turnkey — 15+ hits); (3) N-reasons-one-solution framing explicit ('three issues, one solution'); (4) cut-on-sight phrases (In today's fast-paced, Let me explain, Stay tuned, exclamation points, Why this matters); (5) unsourced metric ('around 40% improvement'); (6) restated thesis (Why this matters appears twice).",
+  "must_contain_findings": [
+    "two 'Why this matters' sections",
+    "buzzword density",
+    "N-reasons-one-solution",
+    "Stay tuned",
+    "unsourced metric",
+    "restated thesis"
+  ],
+  "expected_action_list_length_min": 5,
+  "expected_to_include_whats_salvageable_line": true
+}

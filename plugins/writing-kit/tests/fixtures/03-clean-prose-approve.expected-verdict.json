@@ -1,0 +1,8 @@
+{
+  "fixture": "03-clean-prose-approve",
+  "skill": "thermo-nuclear-writing-review",
+  "expected_verdict": "APPROVE",
+  "rationale": "The draft is already tight. TL;DR commits to a falsifiable claim with placeholder numbers (intentional, not fabricated). Proposal is concrete. Risk section names a specific failure mode with a quantified waste budget. No section over 1k words. No buzzwords from the ban list. No cut-on-sight phrases. Sentence rhythm varies. The skill should output APPROVE immediately per the 'already tight prose' edge case.",
+  "must_not_invent_findings": true,
+  "expected_action_list_length": 0
+}
