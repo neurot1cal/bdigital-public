@@ -44,6 +44,7 @@ by [`scripts/sync-readme.mjs`](scripts/sync-readme.mjs). Do not edit the table b
 | `cc-context-monitor` | productivity | `/plugin install cc-context-monitor@bdigital-public` | [README](plugins/cc-context-monitor/README.md) |
 | `cursor-team-kit` | developer-tools | `/plugin install cursor-team-kit@bdigital-public` | [README](plugins/cursor-team-kit/README.md) |
 | `writing-kit` | writing | `/plugin install writing-kit@bdigital-public` | [README](plugins/writing-kit/README.md) |
+| `voice-corpus` | writing | `/plugin install voice-corpus@bdigital-public` | [README](plugins/voice-corpus/README.md) |
 <!-- /AUTOGEN:plugins-table -->
 
 ## What lives here
@@ -57,9 +58,10 @@ bdigital-public/
 │   ├── session-handoff/        # productivity
 │   ├── cc-context-monitor/     # productivity
 │   ├── cursor-team-kit/        # developer-tools
-│   └── writing-kit/            # writing
+│   ├── writing-kit/            # writing
+│   └── voice-corpus/           # writing
 ├── skills/                     # Auto-generated mirrors for `npx openskills install`
-│   └── (22 skill mirrors, one per skill, byte-identical to plugins/<plugin>/skills/<skill>/)
+│   └── (23 skill mirrors, one per skill, byte-identical to plugins/<plugin>/skills/<skill>/)
 ├── samples/                    # Hand-maintained read-the-source views (tests + evals + blog mirroring)
 │   ├── pr-review/              # Claude-skills-based automated PR review + eval runner
 │   ├── session-handoff/        # Same skill + tests + scenario fixtures
@@ -101,6 +103,7 @@ standard.
 /plugin install cc-context-monitor@bdigital-public
 /plugin install cursor-team-kit@bdigital-public
 /plugin install writing-kit@bdigital-public
+/plugin install voice-corpus@bdigital-public
 ```
 <!-- /AUTOGEN:install-block -->
 
@@ -114,6 +117,7 @@ its full install matrix, tools granted, and trust model:
 - [`plugins/cc-context-monitor/README.md`](plugins/cc-context-monitor/README.md)
 - [`plugins/cursor-team-kit/README.md`](plugins/cursor-team-kit/README.md)
 - [`plugins/writing-kit/README.md`](plugins/writing-kit/README.md)
+- [`plugins/voice-corpus/README.md`](plugins/voice-corpus/README.md)
 <!-- /AUTOGEN:plugin-docs -->
 
 ## Current plugins
@@ -175,6 +179,16 @@ Highlights:
 Adaptations from cursor primitives → Claude Code primitives (frontmatter, subagent invocation, tool references, rule-fragment handling) are documented in [`plugins/cursor-team-kit/PORTING-NOTES.md`](plugins/cursor-team-kit/PORTING-NOTES.md).
 
 Install: `/plugin install cursor-team-kit@bdigital-public`. Source lives at [`plugins/cursor-team-kit/`](plugins/cursor-team-kit/) and the README at [`plugins/cursor-team-kit/README.md`](plugins/cursor-team-kit/README.md).
+
+### `plugins/voice-corpus/`
+
+Make AI write like *you* by feeding it your own writing instead of a style guide. A model- and harness-agnostic CLI pulls your writing from any source (iMessage, Slack, Discord, email/mbox, your own articles, or any text export), runs one shared cleaning + anti-AI-slop + length-tiering pipeline, and emits a JSONL corpus plus a portable `voice-pack.md` you can paste into Claude, Codex, Cursor, Copilot, a raw API call, or a browser chat.
+
+- Pure-stdlib core; adding a source (WhatsApp, Telegram, Notes, anything) is a one-file adapter. See [`references/ARCHITECTURE.md`](plugins/voice-corpus/skills/voice-corpus/references/ARCHITECTURE.md).
+- A shared contamination guard drops the slop most personal corpora are poisoned by: reactions, URL/emoji-only messages, and pasted or forwarded text carrying AI tells.
+- [`references/RESEARCH.md`](plugins/voice-corpus/skills/voice-corpus/references/RESEARCH.md) documents the evidence: why corpus exemplars beat prompting (Path A) and when a local fine-tune wins instead (Path B), with citations.
+
+Install: `/plugin install voice-corpus@bdigital-public`, or `npx openskills install neurot1cal/bdigital-public --skill voice-corpus`. Source lives at [`plugins/voice-corpus/`](plugins/voice-corpus/).
 
 ## Current samples
 

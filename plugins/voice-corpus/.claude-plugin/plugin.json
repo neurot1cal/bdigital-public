@@ -1,0 +1,12 @@
+{
+  "name": "voice-corpus",
+  "description": "Model- and harness-agnostic personal-voice corpus builder. Pulls your own writing from any source (iMessage, Slack, Discord, email/mbox, your own articles, or any text export) through one shared cleaning + anti-AI-slop + length-tiering pipeline, then emits a JSONL corpus plus a portable 'voice pack' prompt that makes any LLM write in your real voice. Pure-stdlib core; new sources are a one-file adapter. See references/RESEARCH.md for the evidence (why corpus exemplars beat prompting, and when a local fine-tune wins instead).",
+  "version": "0.1.0",
+  "category": "writing",
+  "author": {
+    "name": "bdigital media",
+    "url": "https://tech.bdigitalmedia.io"
+  },
+  "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/voice-corpus",
+  "license": "MIT"
+}
