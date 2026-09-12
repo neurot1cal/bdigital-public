@@ -1,6 +1,7 @@
 ---
 name: cc-context-monitor
-description: Use this skill whenever the user wants to configure, install, fix, wire up, customize, troubleshoot, or revert their Claude Code statusline — or when they mention context-window fill, token usage, subscription quota, 5-hour session limits, 7-day weekly quota, ccusage, or any "how much Claude do I have left" visibility concern. Trigger on symptom descriptions too — "my statusline went blank", "the bottom bar doesn't show anything useful", "installed the plugin but nothing shows", "ctx n/a", "no statusline input", "weird characters where dots should be", "colors look gray", "I keep hitting the weekly cap", "I want context % in my terminal", "show my weekly usage" — and even when the user doesn't name the skill by name. The installer writes one line to ~/.claude/settings.json that wires a color-banded three-bar statusline (context / 5-hour / 7-day, green under 50% / yellow under 75% / red at 75%+) into every Claude Code turn. Includes a 7-step diagnostic ladder for cases where the line is missing, blank, or rendering wrong.
+description: "Configure or troubleshoot the Claude Code terminal statusline and its usage display. Does not handle Codex account usage."
+
 user-invocable: true
 allowed-tools: Bash, Read, Write, Edit
 ---
@@ -33,10 +34,10 @@ The wrapper falls back to `ccusage statusline` for the context percent only when
 
 ## When to Use
 
-- User says "install the statusline", "configure statusline", "show my weekly usage", or "what's my context usage"
+- User asks to install, configure, or troubleshoot the Claude Code statusline or its usage display
 - User reports the current statusline is missing context-percent, session, or weekly quota info
-- User asks how much of the 1M-token window they have left
-- User wants the rolling 5-hour or 7-day subscription quota surfaced at a glance
+- User asks about context-window usage in the Claude Code statusline
+- User wants Claude Code's rolling 5-hour or 7-day subscription quota surfaced in that statusline
 - User asks to uninstall the statusline or revert to the default
 
 **Short-circuit:** If the user only asks a purely informational question ("what's in the statusline stdin?"), answer inline without writing to `~/.claude/settings.json`. The configuration step only runs when the user explicitly asks to install, configure, or update.

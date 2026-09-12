@@ -35,6 +35,13 @@
       "category": "writing",
       "source": "./plugins/writing-kit",
       "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/writing-kit"
+    },
+    {
+      "name": "voice-corpus",
+      "description": "Model- and harness-agnostic personal-voice corpus builder. Pulls your own writing from any source (iMessage, Slack, Discord, email/mbox, your own articles, or any text export) through one shared cleaning + anti-AI-slop + length-tiering pipeline, then emits a JSONL corpus plus a portable 'voice pack' prompt that makes any LLM write in your real voice. Pure-stdlib core; new sources are a one-file adapter. Includes a research writeup on why corpus exemplars beat prompting and when a local fine-tune wins instead.",
+      "category": "writing",
+      "source": "./plugins/voice-corpus",
+      "homepage": "https://github.com/neurot1cal/bdigital-public/tree/main/plugins/voice-corpus"
     }
   ]
 }

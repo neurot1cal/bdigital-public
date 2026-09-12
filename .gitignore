@@ -46,3 +46,7 @@ temp/
 
 # Local skill-creator eval workspaces (per-run artifacts, not source)
 *-workspace/
+
+# Python (voice-corpus plugin engine)
+__pycache__/
+*.pyc
