@@ -1,6 +1,7 @@
 ---
 name: deslop-tech-comms
-description: Use this skill whenever the user is drafting AI-generated technical communication — design docs, RFCs, ADRs, runbooks, release notes, executive summaries, Slack messages or threads, email updates, status reports, or any AI-drafted technical writing destined for human readers. Trigger phrases include "write a doc", "draft a Slack post", "summarize this for [audience]", "write an update", "polish this draft", "deslop this", "AI slop check", "tighten this writing", or "make this sound less AI". Enforces audience triage, surface-specific structure (Slack vs doc vs summary vs email), anti-slop checklist (no buzzwords, no fabricated metrics, vary sentence length, specificity over abstraction), and a final re-read pass for AI fingerprints. The companion `thermo-nuclear-writing-review` skill applies the strict critique after the fact; this one prevents the slop at draft time.
+description: "Draft or revise a technical communication artifact, such as a document, email, or announcement. Not for routine answers or progress updates."
+
 user-invocable: true
 allowed-tools: Read, Write, Edit
 ---
@@ -48,7 +49,7 @@ The fix is **proactive structural commitment before generation**: pin audience, 
 
 ## Step 1 — Triage (always run first)
 
-Before drafting a single sentence, confirm four things. If any is ambiguous, ask the user once.
+Infer audience, purpose, surface, and constraints from context. Use the defaults below unless missing information would materially change the draft.
 
 | Dimension | Concrete question | Example answers |
 |---|---|---|
@@ -57,7 +58,7 @@ Before drafting a single sentence, confirm four things. If any is ambiguous, ask
 | **Surface** | Where does this land? | Slack message / Slack thread / Notion doc / GitHub README / customer email / executive memo |
 | **Constraint** | Length, jargon, tone? | "Under 200 words, no jargon, friendly" / "Long-form, technical, no marketing tone" / "One Slack message, terse" |
 
-If the user hasn't said, **default**: audience = engineer peers, purpose = inform, surface = doc, constraint = match the precedent of the user's other artifacts (read 1–2 of their recent writings before drafting).
+If the user hasn't said, **default**: audience = engineer peers, purpose = inform, surface = doc, constraint = match the available precedent of the user's other artifacts. Read a relevant example only when needed to resolve an unfamiliar format or voice.
 
 ## Step 2 — Pick the right structure for the surface
 

@@ -1,7 +1,7 @@
 {
   "name": "writing-kit",
   "description": "Two skills for AI-drafted technical communication: deslop-tech-comms (proactive: enforces audience triage, surface-specific structure, anti-slop checklist while drafting docs, summaries, Slack posts, emails, status updates) and thermo-nuclear-writing-review (reactive: an unusually strict prose review parallel to thermo-nuclear-code-quality-review — writing-judo moves, length discipline, prose-spaghetti detection, buzzword/voice bans, structural-over-surface priority, APPROVE/REVISE/MAJOR verdict). Inspired by Anthropic's skills repo pattern and Cursor's team-kit thermo-nuclear rubric.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "category": "writing",
   "author": {
     "name": "bdigital media",
