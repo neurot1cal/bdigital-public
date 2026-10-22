@@ -8,6 +8,8 @@ export default defineConfig({
   site: 'https://public.bdigitalmedia.io',
   integrations: [tailwind()],
   output: 'static',
+  // Preserve inline text spacing from the pre-Astro 7 HTML compressor.
+  compressHTML: true,
   build: {
     assets: 'assets',
   },
