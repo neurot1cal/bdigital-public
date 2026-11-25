@@ -192,6 +192,8 @@ Install: `/plugin install voice-corpus@bdigital-public`, or `npx openskills inst
 
 ## Current samples
 
+[Ship your first web app](samples/cloudflare-first-app/README.md) walks from a local app to GitHub checks, Cloudflare Free previews, production, and rollback. Includes a starter and a prompt for your coding agent.
+
 ### `samples/pr-review/`
 
 A drop-in GitHub Actions workflow and five Claude skill files that
