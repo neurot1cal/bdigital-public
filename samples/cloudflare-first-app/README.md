@@ -8,46 +8,68 @@ Git keeps the history of your files. GitHub hosts that history and runs your che
 
 Open your agent in an empty folder and paste this:
 
-> Read https://raw.githubusercontent.com/neurot1cal/bdigital-public/main/samples/cloudflare-first-app/README.md and follow it with me. First get the sample working locally. Copy only the contents of its starter directory, including .github, into my new app. If this folder already contains an app, inspect it first and adapt the checks and output directory to it. Keep its framework. Use my own GitHub repository and Cloudflare Free account. Walk me through sign-in and the dashboard clicks. Let me make one small change, see its preview, merge it, and verify it on the production URL. Show me how to undo it. Never ask me to paste a password or token into chat.
+> Read https://raw.githubusercontent.com/neurot1cal/bdigital-public/main/samples/cloudflare-first-app/README.md and follow it with me. Start by helping me create my own GitHub account and repository, or use my existing app repository. Show me how to clone it and check the remote. Copy the starter (including .github) only for a new app. For an existing app, keep its framework and adapt its tests and build. Walk me through local testing, a small GitHub issue, a branch, reviewing the diff, a pull request, Actions, and a Cloudflare Free preview. After I review the preview, help me merge, match the production deployment to the commit, and test the real URL. Show me how to revert a release. Use my accounts and let me handle browser sign-in. Never ask me to paste a password or token into chat.
 
 You can also do the steps yourself. The commands below use Terminal on macOS or Linux, or Git Bash on Windows.
 
-## 1. Get the app running on your laptop
+## 1. Start on GitHub
 
-Install [Git](https://git-scm.com/downloads), [Node.js](https://nodejs.org/en/download) (22 or later), and the [GitHub CLI](https://cli.github.com/). Create accounts at [GitHub](https://github.com/) and [Cloudflare](https://dash.cloudflare.com/sign-up). Open a terminal in a folder where you keep projects. Run these commands one line at a time. Choose an unused folder name if either name already exists.
+1. [Create a GitHub account](https://github.com/signup), verify your email, and sign in. A repository (repo) is the project’s shared copy and history.
+2. Open [New repository](https://github.com/new). Choose your own account as owner, name the repo `my-first-app`, select **Private**, and **add a README**. Click **Create repository**. That README gives you a first commit you can clone. Check that the branch selector shows `main`; the examples use that name.
+3. The **Code** tab shows files. **Issues** tracks work, **Pull requests** shows proposed changes, and **Actions** shows test runs. Leave this page open.
+4. Install [Git](https://git-scm.com/downloads), [Node.js](https://nodejs.org/en/download) (22 or later), and the [GitHub CLI](https://cli.github.com/). Open Terminal or Git Bash. Run the commands below from a folder where you keep projects. Replace `YOUR-USERNAME` with the owner shown on your repo page.
 
 ```sh
-git clone --depth 1 --filter=blob:none --sparse https://github.com/neurot1cal/bdigital-public.git bdigital-examples
-git -C bdigital-examples sparse-checkout set samples/cloudflare-first-app
-mkdir my-first-app
-cp -R bdigital-examples/samples/cloudflare-first-app/starter/. my-first-app/
+git --version
+node --version
+gh --version
+gh auth login
+gh auth setup-git
+gh repo clone YOUR-USERNAME/my-first-app
 cd my-first-app
+git remote -v
+git status -sb
+```
+
+During sign-in, select GitHub.com, HTTPS, and browser login. The remote named `origin` should point to **your** repo. Expect `main...origin/main` and a clean working tree. If you already have app code in GitHub, clone that repo instead, keep its files, and use its own test and build commands below.
+
+## 2. Make the first pull request
+
+Start a branch in your cloned repo. Download the example into a separate sibling directory. Use a fresh directory name if `bdigital-examples` already exists.
+
+```sh
+git switch -c add-starter
+git clone --depth 1 --filter=blob:none --sparse https://github.com/neurot1cal/bdigital-public.git ../bdigital-examples
+git -C ../bdigital-examples sparse-checkout set samples/cloudflare-first-app
+cp -R ../bdigital-examples/samples/cloudflare-first-app/starter/. ./
 node --test check.test.mjs
 node dev.mjs
 ```
 
-Open [the app on your laptop](http://127.0.0.1:8080). Enter 100 in Celsius. Fahrenheit should read 212. Press Ctrl+C in the terminal to stop the server. To start it again, run `node dev.mjs` from the app folder.
-
-## 2. Put your own copy on GitHub
-
-In the same folder, run:
+Open [the app on your laptop](http://127.0.0.1:8080). Enter 100 in Celsius. Fahrenheit should read 212. Press Ctrl+C to stop the server. In the same terminal, stage the intended files and review the proposed commit. Press `q` to exit Git’s diff viewer.
 
 ```sh
-gh auth login
-git init -b main
-git add -- public/ dev.mjs check.test.mjs .github/workflows/check.yml
+git status --short
+git add -- public/ dev.mjs check.test.mjs verify-live.mjs .github/workflows/check.yml
+git diff --cached
 git commit -m "Start the web app"
-gh repo create my-first-app --private --source=. --remote=origin --push
-gh repo view --web
+git push -u origin add-starter
+gh pr create --base main --title "Start the web app" --body "Verified 100 Celsius converts to 212 Fahrenheit locally."
+gh pr view --web
 ```
 
-For login, choose GitHub.com, HTTPS, and browser sign-in. If Git asks who you are at commit time, set `git config user.name "Your Name"` and `git config user.email "YOUR_GITHUB_NOREPLY_EMAIL"` in this repo, then retry the commit. GitHub shows your private commit email under Settings → Emails. If the repo name is taken in your account, choose another name in the create command.
+If Git asks who you are, set `git config user.name "Your Name"` and `git config user.email "YOUR_GITHUB_NOREPLY_EMAIL"` in this repo and retry the commit. Your GitHub private commit email is under **Settings → Emails**.
 
-On GitHub, open **Actions → Check app**. The green check means the pushed commit passed the same tests you ran locally. Keep private keys and credentials outside the repository. Everything published from `public/` is readable by visitors, even when the GitHub repository is private.
+On the PR, open **Files changed** and review what will ship. Keep credentials out of Git. Everything under `public/` will be publicly readable. Open **Checks** and inspect the `Check app` result. If GitHub asks you to enable Actions in this new repo, enable it and rerun the check. After the tests pass, choose **Squash and merge** and confirm. Bring the merged commit back to your laptop:
+
+```sh
+git switch main
+git pull --ff-only
+```
 
 ## 3. Connect GitHub to Cloudflare Pages once
 
-1. In the Cloudflare dashboard, open **Workers & Pages → Create application**. Choose **Pages** and the **Git / import an existing repository** option. Dashboard wording can vary. The Pages setup asks for a build output directory.
+1. [Create a free Cloudflare account](https://dash.cloudflare.com/sign-up) and verify your email. In the Cloudflare dashboard, open **Workers & Pages → Create application**. Choose **Pages** and the **Git / import an existing repository** option. Dashboard wording can vary. The Pages setup asks for a build output directory.
 2. Connect GitHub. Give the Cloudflare GitHub app access to your new repository. Choose that repository and a project name.
 3. Enter these build settings. Leave the optional root directory empty because you copied the starter files to your repository root.
 
@@ -64,18 +86,39 @@ The Pages build command is a release gate. A failed test exits with an error, so
 
 ## 4. Ship a change through a preview
 
-Run `git switch -c change-heading`. Edit the heading inside `public/index.html` to say “My temperature converter.” Then run:
+On GitHub, open **Issues → New issue**. Title it “Personalize the converter heading.” Give it a finish line: “The homepage says My temperature converter and 100 Celsius still gives 212 Fahrenheit.” Submit the issue and note its number.
+
+Start each change from current production history:
+
+```sh
+git switch main
+git pull --ff-only
+git switch -c change-heading
+```
+
+Edit the heading inside `public/index.html` to say “My temperature converter.” Then run:
 
 ```sh
 node --test check.test.mjs
+git diff -- public/index.html
 git add -- public/index.html
 git commit -m "Personalize the converter heading"
 git push -u origin change-heading
-gh pr create --base main --title "Personalize the converter heading" --body "Update the heading on the home page."
+gh pr create --base main --title "Personalize the converter heading" --body "Closes #1. Verify the new heading and 100 C to 212 F."
 gh pr view --web
 ```
 
+Replace `#1` in the PR body with your actual issue number. When the PR merges into the default branch, GitHub closes the linked issue. Review **Files changed** before merging.
+
 A branch keeps this change separate from production. A pull request (PR) proposes merging it into `main`. Open the Cloudflare preview link on the PR, or find the branch under **Pages → your project → Deployments**. Use branches in your own repository for previews. Confirm the new heading appears on the preview and the old heading still appears on production. Preview URLs are public by default.
+
+Run the same smoke check against the preview. Copy its full URL from Pages when prompted. The script checks the HTTP response, the expected heading, and both JavaScript assets. Test the interaction in your browser as well.
+
+```sh
+echo "Paste the preview URL, then press Enter"
+read -r preview_url
+node verify-live.mjs "$preview_url" "My temperature converter"
+```
 
 Once both checks pass, use **Squash and merge** on GitHub. Return to Cloudflare Deployments and wait for the **production** deployment for the new commit to succeed. Reload the bookmarked production URL and repeat the converter check. A green PR preview alone does not verify production.
 
@@ -83,6 +126,16 @@ Once both checks pass, use **Squash and merge** on GitHub. Return to Cloudflare 
 git switch main
 git pull --ff-only
 ```
+
+Run `git rev-parse --short HEAD` and compare it with the production commit shown by Pages. Now verify the production URL independently:
+
+```sh
+echo "Paste the production URL, then press Enter"
+read -r production_url
+node verify-live.mjs "$production_url" "My temperature converter"
+```
+
+Record the production URL, commit, and converter result on the issue or PR. When something fails, record the failing step there and fix it on a branch. For example, after reverting the heading, rerun the same smoke check with `"Temperature converter"` and confirm 100 still gives 212.
 
 Repeat this loop for each small change. Add a test whenever the app gains behavior you want to keep. If you add another browser asset, add its path and content type to `dev.mjs` so the local server serves it too.
 
